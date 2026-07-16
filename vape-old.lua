@@ -280,9 +280,31 @@ function lib:Window(text, preset, closebind)
         end
     )
 
+    local lastActiveTab = nil
+
     MinimizeBtn.MouseButton1Click:Connect(
         function()
             minimized = not minimized
+
+            if minimized then
+                -- remember which tab was open, then hide the tab list + tab
+                -- content so they don't get squashed into the collapsed bar
+                for i, v in next, TabFolder:GetChildren() do
+                    if v.Name == "Tab" then
+                        if v.Visible then
+                            lastActiveTab = v
+                        end
+                        v.Visible = false
+                    end
+                end
+                TabHold.Visible = false
+            else
+                TabHold.Visible = true
+                if lastActiveTab then
+                    lastActiveTab.Visible = true
+                end
+            end
+
             if not uitoggled then
                 Main:TweenSize(OpenSize(), Enum.EasingDirection.Out, Enum.EasingStyle.Quart, .4, true)
             end
@@ -918,23 +940,34 @@ function lib:Window(text, preset, closebind)
                 SliderValue.Text = tostring(value)
                 pcall(callback, value)
             end
-            SlideCircle.InputBegan:Connect(
-                function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        dragging = true
-                    end
+
+            local function StartDrag(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    dragging = true
+                    move(input)
                 end
-            )
-            SlideCircle.InputEnded:Connect(
+            end
+
+            -- Active must be true on plain Frames/ImageButtons for InputBegan to fire at all
+            SlideFrame.Active = true
+            SlideFrame.InputBegan:Connect(StartDrag)
+            SlideCircle.InputBegan:Connect(StartDrag)
+
+            UserInputService.InputEnded:Connect(
                 function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                         dragging = false
                     end
                 end
             )
-            game:GetService("UserInputService").InputChanged:Connect(
+
+            UserInputService.InputChanged:Connect(
                 function(input)
-                    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                    if
+                        dragging and
+                            (input.UserInputType == Enum.UserInputType.MouseMovement or
+                                input.UserInputType == Enum.UserInputType.Touch)
+                     then
                         move(input)
                     end
                 end
@@ -1295,6 +1328,7 @@ function lib:Window(text, preset, closebind)
             Color.Size = UDim2.new(0, 194, 0, 80)
             Color.ZIndex = 10
             Color.Image = "rbxassetid://4155801252"
+            Color.Active = true
 
             ColorCorner.CornerRadius = UDim.new(0, 3)
             ColorCorner.Name = "ColorCorner"
@@ -1316,6 +1350,7 @@ function lib:Window(text, preset, closebind)
             Hue.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             Hue.Position = UDim2.new(0, 202, 0, 42)
             Hue.Size = UDim2.new(0, 25, 0, 80)
+            Hue.Active = true
 
             HueCorner.CornerRadius = UDim.new(0, 3)
             HueCorner.Name = "HueCorner"
