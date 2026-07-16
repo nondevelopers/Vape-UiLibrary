@@ -4,7 +4,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/nondevelopers/Vape-ol
 ```
 ## updates
 
-07/15/2026
+07/15/2026  
 [+] added minimize button  
 [+] added close button  
 [+] fixed color picker  
