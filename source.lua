@@ -1961,11 +1961,22 @@ function lib:Window(text, preset, closebind)
             local leftInset = hasAvatar and 63 or 13
             local textWidth = 363 - leftInset - 13
 
-            local titleBounds =
-                TextService:GetTextSize(title, 14, Enum.Font.GothamBold, Vector2.new(textWidth, math.huge))
-            local textBounds = TextService:GetTextSize(text, 13, Enum.Font.Gotham, Vector2.new(textWidth, math.huge))
+            -- Measured line-by-line (rather than passing the whole multi-line
+            -- string to GetTextSize at once) so manual "\n" breaks combined
+            -- with word-wrap always add up to the exact height needed, plus
+            -- a small buffer so the last line never gets clipped.
+            local function MeasureHeight(str, size, font)
+                local total = 0
+                for _, line in ipairs(str:split("\n")) do
+                    total = total + TextService:GetTextSize(line, size, font, Vector2.new(textWidth, math.huge)).Y
+                end
+                return total + 4
+            end
 
-            local contentHeight = 13 + titleBounds.Y + 4 + textBounds.Y + 13
+            local titleHeight = MeasureHeight(title, 14, Enum.Font.GothamBold)
+            local textHeight = MeasureHeight(text, 13, Enum.Font.Gotham)
+
+            local contentHeight = 13 + titleHeight + 4 + textHeight + 13
             local cardHeight = math.max(contentHeight, hasAvatar and 68 or 0, 42)
 
             local Paragraph = Instance.new("Frame")
@@ -2013,7 +2024,7 @@ function lib:Window(text, preset, closebind)
             ParagraphTitle.Parent = Paragraph
             ParagraphTitle.BackgroundTransparency = 1.000
             ParagraphTitle.Position = UDim2.new(0, leftInset, 0, 13)
-            ParagraphTitle.Size = UDim2.new(0, textWidth, 0, titleBounds.Y)
+            ParagraphTitle.Size = UDim2.new(0, textWidth, 0, titleHeight)
             ParagraphTitle.Font = Enum.Font.GothamBold
             ParagraphTitle.Text = title
             ParagraphTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -2025,8 +2036,8 @@ function lib:Window(text, preset, closebind)
             ParagraphText.Name = "ParagraphText"
             ParagraphText.Parent = Paragraph
             ParagraphText.BackgroundTransparency = 1.000
-            ParagraphText.Position = UDim2.new(0, leftInset, 0, 13 + titleBounds.Y + 4)
-            ParagraphText.Size = UDim2.new(0, textWidth, 0, textBounds.Y)
+            ParagraphText.Position = UDim2.new(0, leftInset, 0, 13 + titleHeight + 4)
+            ParagraphText.Size = UDim2.new(0, textWidth, 0, textHeight)
             ParagraphText.Font = Enum.Font.Gotham
             ParagraphText.Text = text
             ParagraphText.TextColor3 = Color3.fromRGB(200, 200, 200)
