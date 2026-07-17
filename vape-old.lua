@@ -370,6 +370,10 @@ function lib:Window(text, preset, closebind)
         PresetColor = toch
     end
 
+    function lib:Destroy()
+        ui:Destroy()
+    end
+
     function lib:Notification(texttitle, textdesc, textbtn)
         local NotificationHold = Instance.new("TextButton")
         local NotificationFrame = Instance.new("Frame")
@@ -2024,6 +2028,53 @@ function lib:Window(text, preset, closebind)
                     end
                 end
             )
+        end
+        function tabcontent:Section(text)
+            -- extra breathing room above the section, but not if it's the
+            -- very first thing added to the tab (Tab always has TabLayout
+            -- as a child, so 1 child means nothing's been added yet)
+            if #Tab:GetChildren() > 1 then
+                local SectionSpacing = Instance.new("Frame")
+                SectionSpacing.Name = "SectionSpacing"
+                SectionSpacing.Parent = Tab
+                SectionSpacing.BackgroundTransparency = 1.000
+                SectionSpacing.Size = UDim2.new(0, 363, 0, 8)
+            end
+
+            local Section = Instance.new("TextLabel")
+
+            Section.Name = "Section"
+            Section.Parent = Tab
+            Section.BackgroundTransparency = 1.000
+            Section.Size = UDim2.new(0, 363, 0, 20)
+            Section.Font = Enum.Font.GothamBold
+            Section.Text = text
+            Section.TextColor3 = PresetColor
+            Section.TextSize = 13.000
+            Section.TextXAlignment = Enum.TextXAlignment.Left
+            Section.TextTransparency = 1.000
+
+            coroutine.wrap(
+                function()
+                    while wait() do
+                        Section.TextColor3 = PresetColor
+                    end
+                end
+            )()
+
+            TweenService:Create(
+                Section,
+                TweenInfo.new(.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {TextTransparency = 0}
+            ):Play()
+
+            Tab.CanvasSize = UDim2.new(0, 0, 0, TabLayout.AbsoluteContentSize.Y)
+
+            local SectionValue = {}
+            function SectionValue:Set(newText)
+                Section.Text = newText
+            end
+            return SectionValue
         end
         return tabcontent
     end
