@@ -80,21 +80,14 @@ end)
 tab:Label("Label")
 
 -- ============================================================
--- Simple movement examples - speed and jump height, just to show
--- the components actually driving something. Both re-apply
--- whenever the character respawns.
+-- Movement examples - speed, jump power, infinite jump, noclip,
+-- fly. All client-side Humanoid/character tweaks; nothing here
+-- reads or touches other players.
 -- ============================================================
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
-
-local DEFAULT_WALKSPEED = 16
-local DEFAULT_JUMPPOWER = 50
-
-local speedEnabled = false
-local speedAmount = 50
-
-local jumpEnabled = false
-local jumpAmount = 100
 
 local function GetHumanoid()
     local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -102,6 +95,11 @@ local function GetHumanoid()
 end
 
 local movement = win:Tab("Movement")
+
+-- Speed --------------------------------------------------------
+local DEFAULT_WALKSPEED = 16
+local speedEnabled = false
+local speedAmount = 50
 
 movement:Toggle("Speed", false, function(state)
     speedEnabled = state
@@ -115,6 +113,11 @@ movement:Slider("Speed Amount", 16, 200, speedAmount, function(value)
     end
 end)
 
+-- Jump power -----------------------------------------------------
+local DEFAULT_JUMPPOWER = 50
+local jumpEnabled = false
+local jumpAmount = 100
+
 movement:Toggle("Jump Power", false, function(state)
     jumpEnabled = state
     GetHumanoid().JumpPower = state and jumpAmount or DEFAULT_JUMPPOWER
@@ -127,11 +130,163 @@ movement:Slider("Jump Amount", 50, 250, jumpAmount, function(value)
     end
 end)
 
--- Re-apply after respawning, since a fresh Humanoid resets to defaults
+-- Infinite jump ----------------------------------------------------
+local infiniteJumpEnabled = false
+local infiniteJumpConnection
+
+movement:Toggle("Infinite Jump", false, function(state)
+    infiniteJumpEnabled = state
+    if infiniteJumpConnection then
+        infiniteJumpConnection:Disconnect()
+        infiniteJumpConnection = nil
+    end
+    if state then
+        infiniteJumpConnection = UserInputService.JumpRequest:Connect(function()
+            GetHumanoid():ChangeState(Enum.HumanoidStateType.Jumping)
+        end)
+    end
+end)
+
+-- Noclip -------------------------------------------------------------
+local noclipEnabled = false
+local noclipConnection
+
+local function SetCharacterCollisions(canCollide)
+    local character = LocalPlayer.Character
+    if not character then
+        return
+    end
+    for _, part in ipairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = canCollide
+        end
+    end
+end
+
+movement:Toggle("Noclip", false, function(state)
+    noclipEnabled = state
+    if noclipConnection then
+        noclipConnection:Disconnect()
+        noclipConnection = nil
+    end
+    if state then
+        noclipConnection = RunService.Stepped:Connect(function()
+            SetCharacterCollisions(false)
+        end)
+    else
+        SetCharacterCollisions(true)
+    end
+end)
+
+-- Fly ------------------------------------------------------------------
+local flyEnabled = false
+local flySpeed = 50
+local flyVelocity, flyGyro, flyConnection
+local heldKeys = {}
+
+UserInputService.InputBegan:Connect(function(input, processed)
+    if not processed then
+        heldKeys[input.KeyCode] = true
+    end
+end)
+UserInputService.InputEnded:Connect(function(input)
+    heldKeys[input.KeyCode] = nil
+end)
+
+local function StartFly()
+    local humanoid = GetHumanoid()
+    local hrp = humanoid.Parent:WaitForChild("HumanoidRootPart")
+
+    flyVelocity = Instance.new("BodyVelocity")
+    flyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    flyVelocity.Velocity = Vector3.new(0, 0, 0)
+    flyVelocity.Parent = hrp
+
+    flyGyro = Instance.new("BodyGyro")
+    flyGyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+    flyGyro.P = 10000
+    flyGyro.CFrame = hrp.CFrame
+    flyGyro.Parent = hrp
+
+    humanoid.PlatformStand = true
+
+    flyConnection = RunService.RenderStepped:Connect(function()
+        local camCFrame = workspace.CurrentCamera.CFrame
+        local direction = Vector3.new(0, 0, 0)
+
+        if heldKeys[Enum.KeyCode.W] then
+            direction = direction + camCFrame.LookVector
+        end
+        if heldKeys[Enum.KeyCode.S] then
+            direction = direction - camCFrame.LookVector
+        end
+        if heldKeys[Enum.KeyCode.A] then
+            direction = direction - camCFrame.RightVector
+        end
+        if heldKeys[Enum.KeyCode.D] then
+            direction = direction + camCFrame.RightVector
+        end
+        if heldKeys[Enum.KeyCode.Space] then
+            direction = direction + Vector3.new(0, 1, 0)
+        end
+        if heldKeys[Enum.KeyCode.LeftControl] then
+            direction = direction - Vector3.new(0, 1, 0)
+        end
+
+        if direction.Magnitude > 0 then
+            direction = direction.Unit
+        end
+
+        flyVelocity.Velocity = direction * flySpeed
+        flyGyro.CFrame = camCFrame
+    end)
+end
+
+local function StopFly()
+    if flyConnection then
+        flyConnection:Disconnect()
+        flyConnection = nil
+    end
+    if flyVelocity then
+        flyVelocity:Destroy()
+        flyVelocity = nil
+    end
+    if flyGyro then
+        flyGyro:Destroy()
+        flyGyro = nil
+    end
+    local character = LocalPlayer.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.PlatformStand = false
+    end
+end
+
+movement:Toggle("Fly", false, function(state)
+    flyEnabled = state
+    if state then
+        StartFly()
+    else
+        StopFly()
+    end
+end)
+
+movement:Slider("Fly Speed", 10, 200, flySpeed, function(value)
+    flySpeed = value
+end)
+
+-- Re-apply everything after respawning, since a fresh character/Humanoid
+-- resets to defaults and drops any BodyVelocity/BodyGyro from Fly.
 LocalPlayer.CharacterAdded:Connect(function(character)
     local humanoid = character:WaitForChild("Humanoid")
     humanoid.WalkSpeed = speedEnabled and speedAmount or DEFAULT_WALKSPEED
     humanoid.JumpPower = jumpEnabled and jumpAmount or DEFAULT_JUMPPOWER
+    if noclipEnabled then
+        SetCharacterCollisions(false)
+    end
+    if flyEnabled then
+        StartFly()
+    end
 end)
 
 -- ============================================================
