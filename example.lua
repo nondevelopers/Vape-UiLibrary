@@ -33,6 +33,14 @@ button2:Label("Setting 1")
 button2:Label("Setting 2")
 button2:Label("Setting 3")
 
+-- tab:Section(text)
+--   A lightweight header used to visually group the elements below
+--   it - no background box, just bold text tinted with the window's
+--   accent color, with a small gap above it (skipped if it's the
+--   first thing in the tab). Returns an object with :Set(newText)
+--   if you want to rename it later.
+tab:Section("Basics")
+
 -- tab:Toggle(title, default, callback)
 --   An on/off switch. default is the starting state (true/false).
 --   callback fires with the new state every time it's flipped.
@@ -299,4 +307,31 @@ local changeclr = win:Tab("Change UI Color")
 --   the whole window, live.
 changeclr:Colorpicker("Change UI Color", Color3.fromRGB(44, 120, 224), function(t)
     lib:ChangePresetColor(Color3.fromRGB(t.R * 255, t.G * 255, t.B * 255))
+end)
+
+-- ============================================================
+-- Settings tab - re-theme the UI live, and a "Fully Close" button
+-- that removes the UI from the game entirely (not just hides it).
+-- ============================================================
+local settings = win:Tab("Settings")
+
+-- tab:Colorpicker(...) + lib:ChangePresetColor(color)
+--   Changes the accent color used by toggles/sliders/tab indicators/
+--   etc. across the whole window, live.
+settings:Colorpicker("Change UI Color", Color3.fromRGB(44, 120, 224), function(t)
+    lib:ChangePresetColor(Color3.fromRGB(t.R * 255, t.G * 255, t.B * 255))
+end)
+
+settings:Section("Danger Zone")
+
+-- lib:Destroy()
+--   Tears down the entire UI - the ScreenGui and everything inside
+--   it (the panel, every tab, notifications, the mobile toggle
+--   button). Use this for a "Fully Close" button: unlike the X
+--   button or the closeKeybind (which just hide the panel and can
+--   reopen it), Destroy() can't be undone from inside the script -
+--   you'd need to loadstring the library again to bring the UI
+--   back.
+settings:Button("Fully Close", function()
+    lib:Destroy()
 end)
