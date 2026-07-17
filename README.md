@@ -1,7 +1,7 @@
 # Vape ui library.
 ```lua
 -- this is the example script, if you wanna check the example source code, just check it out, only did this because i was lazy ngl.
-loadstring(game:HttpGet("https://raw.githubusercontent.com/nondevelopers/Vape-old-UiLibrary/main/example.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/nondevelopers/Vape-UiLibrary/main/source.lua"))()
 ```
 
 ## updates
