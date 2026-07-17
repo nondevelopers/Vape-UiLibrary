@@ -298,18 +298,6 @@ LocalPlayer.CharacterAdded:Connect(function(character)
 end)
 
 -- ============================================================
--- A second tab used purely to re-theme the UI's accent color
--- ============================================================
-local changeclr = win:Tab("Change UI Color")
-
--- lib:ChangePresetColor(color)
---   Changes the accent color used by toggles/sliders/etc. across
---   the whole window, live.
-changeclr:Colorpicker("Change UI Color", Color3.fromRGB(44, 120, 224), function(t)
-    lib:ChangePresetColor(Color3.fromRGB(t.R * 255, t.G * 255, t.B * 255))
-end)
-
--- ============================================================
 -- Settings tab - re-theme the UI live, and a "Fully Close" button
 -- that removes the UI from the game entirely (not just hides it).
 -- ============================================================
