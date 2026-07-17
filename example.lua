@@ -18,6 +18,23 @@ local LocalPlayer = Players.LocalPlayer
 --   to that tab. Call win:Tab(...) again for more tabs.
 local tab = win:Tab("Tab 1")
 
+-- tab:Paragraph(title, text)
+--   A card with a bold title and a wrapped body of text below it.
+tab:Paragraph(
+    "About",
+    "This is an example UI built with the Vape UI Library. Every element on this page is just here to show what it looks like and how to call it."
+)
+
+-- tab:Paragraph(title, text, avatar)
+--   Same as above, but avatar (a userId number or a username string)
+--   adds a circular avatar thumbnail on the left. Here we use the
+--   local player's own info to build the body text.
+tab:Paragraph(
+    "Player Info",
+    string.format("display: %s\nuser: %s\nuserid: %s", LocalPlayer.DisplayName, LocalPlayer.Name, LocalPlayer.UserId),
+    LocalPlayer.UserId
+)
+
 -- tab:Section(text)
 --   A lightweight header used to visually group the elements below
 --   it - no background box, just bold text tinted with the window's
@@ -93,25 +110,6 @@ end)
 -- tab:Label(text)
 --   Plain, non-interactive text - useful for section headers or notes.
 tab:Label("Label")
-
-tab:Section("Paragraphs")
-
--- tab:Paragraph(title, text)
---   A card with a bold title and a wrapped body of text below it.
-tab:Paragraph(
-    "About",
-    "This is an example UI built with the Vape UI Library. Every element on this page is just here to show what it looks like and how to call it."
-)
-
--- tab:Paragraph(title, text, avatar)
---   Same as above, but avatar (a userId number or a username string)
---   adds a circular avatar thumbnail on the left. Here we use the
---   local player's own info to build the body text.
-tab:Paragraph(
-    "Player Info",
-    string.format("display: %s\nuser: %s\nuserid: %s", LocalPlayer.DisplayName, LocalPlayer.Name, LocalPlayer.UserId),
-    LocalPlayer.UserId
-)
 
 -- ============================================================
 -- Movement examples - speed, jump power, infinite jump, noclip,
