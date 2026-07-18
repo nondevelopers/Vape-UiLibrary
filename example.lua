@@ -48,13 +48,14 @@ tab:Paragraph(
 --   if you want to rename it later.
 tab:Section("Buttons")
 
--- tab:Button(title, callback, hasSettings)
+-- tab:Button(title, callback, hasSettings, icon)
 --   A simple clickable button; callback runs on click.
 --   hasSettings (optional, true/false) adds a "..." to the button -
 --   right-click it (PC) or tap the dots (mobile) to open a small
 --   panel below it. Button returns an object with :Label(text) to
---   add rows to that panel.
-tab:Button("Button", function()
+--   add rows to that panel. icon (optional, same as win:Tab's icon)
+--   renders to the left of the title - see the Icons section below.
+tab:Button("Notification Button", function()
     lib:Notification("Notification", "Hello!", "Hi!")
 end)
 
@@ -66,11 +67,26 @@ button2:Label("Setting 1")
 button2:Label("Setting 2")
 button2:Label("Setting 3")
 
+tab:Section("Icons")
+
+-- Button and Toggle both take an icon as their last argument, same
+-- Lucide name (or raw asset link) that win:Tab takes. It renders to
+-- the left of the title, same as tab icons do.
+tab:Button("Icon Button", function()
+    print("Icon button pressed")
+end, false, "star")
+
+tab:Toggle("Icon Toggle", false, function(t)
+    print(t)
+end, "bell")
+
 tab:Section("Controls")
 
--- tab:Toggle(title, default, callback)
+-- tab:Toggle(title, default, callback, icon)
 --   An on/off switch. default is the starting state (true/false).
 --   callback fires with the new state every time it's flipped.
+--   icon (optional, same as win:Tab's icon) renders to the left of
+--   the title - see the Icons section below.
 tab:Toggle("Toggle", false, function(t)
     print(t)
 end)
