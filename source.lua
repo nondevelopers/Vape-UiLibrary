@@ -5,7 +5,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local PresetColor = Color3.fromRGB(44, 120, 224)
-local CloseBind = Enum.KeyCode.RightControl
+local CloseBind = Enum.KeyCode.LeftAlt
 
 -- Lucide icon lookup: each entry is one Lucide icon (https://lucide.dev)
 -- pre-uploaded to Roblox as its own single-image asset - no sprite sheet
