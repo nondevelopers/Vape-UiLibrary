@@ -6,9 +6,13 @@
 --   Creates the window. accentColor tints toggles/sliders/etc.
 --   closeKeybind (optional, defaults to RightControl) hides/shows
 --   the whole UI when pressed. Returns "win", used to make tabs.
-local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/nondevelopers/Vape-UiLibrary/main/source.luau"))()
+local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/nondevelopers/Vape-UiLibrary/main/source.lua"))()
 
-local win = lib:Window("Vape Ui Library PREVIEW", Color3.fromRGB(44, 120, 224), Enum.KeyCode.RightControl)
+local win = lib:Window(
+    "Vape Ui Library PREVIEW",
+    Color3.fromRGB(44, 120, 224),
+    Enum.KeyCode.RightControl
+)
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -21,19 +25,20 @@ local LocalPlayer = Players.LocalPlayer
 --   for the full list of ~800 names. You can also pass a raw
 --   rbxassetid://, rbxthumb://, or http(s) image link instead of a
 --   name if you want a custom icon.
-local tab = win:Tab("Tab 1", "layout-grid")
+local tab = win:Tab(
+    "Tab 1",
+    "layout-grid"
+)
 
--- tab:Paragraph(title, text)
+-- tab:Paragraph(title, text, avatar)
 --   A card with a bold title and a wrapped body of text below it.
+--   avatar (optional - a userId number or username string) adds a
+--   circular avatar thumbnail on the left.
 tab:Paragraph(
     "About",
     "This is an example UI built with the Vape UI Library. Every element on this page is just here to show what it looks like and how to call it."
 )
 
--- tab:Paragraph(title, text, avatar)
---   Same as above, but avatar (a userId number or a username string)
---   adds a circular avatar thumbnail on the left. Here we use the
---   local player's own info to build the body text.
 tab:Paragraph(
     "Player Info",
     string.format("display: %s\nuser: %s\nuserid: %s", LocalPlayer.DisplayName, LocalPlayer.Name, LocalPlayer.UserId),
@@ -68,30 +73,19 @@ button2:Label("Setting 3")
 
 tab:Section("Controls")
 
--- tab:Toggle(title, default, callback)
---   An on/off switch. default is the starting state (true/false).
---   callback fires with the new state every time it's flipped.
 tab:Toggle("Toggle", false, function(t)
     print(t)
 end)
 
--- tab:Slider(title, min, max, default, callback)
---   A draggable number slider. callback fires with the current
---   value while dragging.
+-- fires continuously while dragging, not just on release
 tab:Slider("Slider", 0, 100, 30, function(t)
     print(t)
 end)
 
--- tab:Dropdown(title, {options...}, callback)
---   A collapsible list of string options. callback fires with the
---   option that was clicked.
 tab:Dropdown("Dropdown", {"Option 1", "Option 2", "Option 3", "Option 4", "Option 5"}, function(t)
     print(t)
 end)
 
--- tab:Colorpicker(title, defaultColor, callback)
---   A hue/saturation/value color picker. callback fires with the
---   chosen Color3 whenever it changes.
 tab:Colorpicker("Colorpicker", Color3.fromRGB(255, 0, 0), function(t)
     print(t)
 end)
@@ -112,15 +106,16 @@ tab:Bind("Bind", Enum.KeyCode.RightShift, function()
     print("Pressed!")
 end)
 
--- tab:Label(text)
---   Plain, non-interactive text - useful for section headers or notes.
 tab:Label("Label")
 
 -- ============================================================
 -- Settings tab - re-theme the UI live, and a "Fully Close" button
 -- that removes the UI from the game entirely (not just hides it).
 -- ============================================================
-local settings = win:Tab("Settings", "settings")
+local settings = win:Tab(
+    "Settings",
+    "settings"
+)
 
 settings:Section("Appearance")
 
