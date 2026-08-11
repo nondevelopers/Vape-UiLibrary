@@ -1278,7 +1278,8 @@ function lib:Window(text, preset, closebind)
         ui:Destroy()
     end
 
-    function lib:Notification(texttitle, textdesc)
+    function lib:Notification(texttitle, textdesc, duration)
+        duration = duration or 4
         -- Stack notifications so multiple ones don't overlap.
         -- Each new one sits above the previous by tracking how many
         -- are currently visible.
@@ -1369,7 +1370,7 @@ function lib:Window(text, preset, closebind)
         end
 
         coroutine.wrap(function()
-            wait(4)
+            wait(duration)
             if NotifCard and NotifCard.Parent then
                 Dismiss()
             end
@@ -3105,19 +3106,6 @@ function lib:Window(text, preset, closebind)
         end
         return tabcontent
     end
-
-    -- Welcome notification, fired once when the window is created. Runs in
-    -- its own coroutine since lib:Notification yields (it waits out its own
-    -- tween-in), so it doesn't hold up the rest of window/tab setup below
-    -- this call in the developer's script.
-    coroutine.wrap(
-        function()
-            lib:Notification(
-                "Welcome",
-                string.format("Logged in as %s (@%s)", LocalPlayer.DisplayName, LocalPlayer.Name)
-            )
-        end
-    )()
 
     return tabhold
 end
