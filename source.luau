@@ -956,7 +956,7 @@ function lib:Window(text, preset, closebind)
     TabHold.Parent = Main
     TabHold.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     TabHold.BackgroundTransparency = 1.000
-    TabHold.Position = UDim2.new(0.0339285731, 0, 0.147335425, 0)
+    TabHold.Position = UDim2.new(0, 19, 0, 47)
     TabHold.Size = UDim2.new(0, 107, 0, 254)
 
     TabHoldLayout.Name = "TabHoldLayout"
@@ -1279,145 +1279,142 @@ function lib:Window(text, preset, closebind)
     end
 
     function lib:Notification(texttitle, textdesc, textbtn)
-        local NotificationHold = Instance.new("TextButton")
-        local NotificationFrame = Instance.new("Frame")
-        local OkayBtn = Instance.new("TextButton")
-        local OkayBtnCorner = Instance.new("UICorner")
-        local OkayBtnTitle = Instance.new("TextLabel")
-        local NotificationTitle = Instance.new("TextLabel")
-        local NotificationDesc = Instance.new("TextLabel")
+        -- Stack notifications so multiple ones don't overlap.
+        -- Each new one sits above the previous by tracking how many
+        -- are currently visible.
+        local NOTIF_W   = 220
+        local NOTIF_H   = 100
+        local NOTIF_PAD = 12   -- gap from screen edge and between stacked notifs
 
-        NotificationHold.Name = "NotificationHold"
-        NotificationHold.Parent = Main
-        NotificationHold.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        NotificationHold.BackgroundTransparency = 1.000
-        NotificationHold.BorderSizePixel = 0
-        NotificationHold.Size = UDim2.new(0, 560, 0, 319)
-        NotificationHold.AutoButtonColor = false
-        NotificationHold.Font = Enum.Font.SourceSans
-        NotificationHold.Text = ""
-        NotificationHold.TextColor3 = Color3.fromRGB(0, 0, 0)
-        NotificationHold.TextSize = 14.000
+        -- count existing live notifications so we can stack upward
+        local stackIndex = 0
+        for _, v in ipairs(ui:GetChildren()) do
+            if v.Name == "NotifCard" then
+                stackIndex = stackIndex + 1
+            end
+        end
 
+        local NotifCard   = Instance.new("Frame")
+        local NotifCorner = Instance.new("UICorner")
+        local NotifAccent = Instance.new("Frame")
+        local NotifTitle  = Instance.new("TextLabel")
+        local NotifDesc   = Instance.new("TextLabel")
+        local NotifBtn    = Instance.new("TextButton")
+        local NotifBtnCorner = Instance.new("UICorner")
+        local NotifBtnLabel  = Instance.new("TextLabel")
+
+        -- anchored bottom-right; slides in from off the right edge
+        local targetX  = UDim2.new(1, -(NOTIF_W + NOTIF_PAD), 1, -(NOTIF_PAD + NOTIF_H + stackIndex * (NOTIF_H + 8)))
+        local offscreenX = UDim2.new(1, NOTIF_W + 20,         1, -(NOTIF_PAD + NOTIF_H + stackIndex * (NOTIF_H + 8)))
+
+        NotifCard.Name = "NotifCard"
+        NotifCard.Parent = ui
+        NotifCard.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        NotifCard.BorderSizePixel = 0
+        NotifCard.ClipsDescendants = true
+        NotifCard.Size = UDim2.new(0, NOTIF_W, 0, NOTIF_H)
+        NotifCard.Position = offscreenX
+        NotifCard.ZIndex = 20
+
+        NotifCorner.CornerRadius = UDim.new(0, 6)
+        NotifCorner.Parent = NotifCard
+
+        -- thin accent bar on the left edge tinted with PresetColor
+        NotifAccent.Name = "NotifAccent"
+        NotifAccent.Parent = NotifCard
+        NotifAccent.BackgroundColor3 = PresetColor
+        NotifAccent.BorderSizePixel = 0
+        NotifAccent.Size = UDim2.new(0, 3, 1, 0)
+        NotifAccent.ZIndex = 21
+
+        NotifTitle.Name = "NotifTitle"
+        NotifTitle.Parent = NotifCard
+        NotifTitle.BackgroundTransparency = 1.000
+        NotifTitle.Position = UDim2.new(0, 12, 0, 10)
+        NotifTitle.Size = UDim2.new(1, -16, 0, 20)
+        NotifTitle.Font = Enum.Font.GothamBold
+        NotifTitle.Text = texttitle
+        NotifTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        NotifTitle.TextSize = 13
+        NotifTitle.TextXAlignment = Enum.TextXAlignment.Left
+        NotifTitle.ZIndex = 21
+
+        NotifDesc.Name = "NotifDesc"
+        NotifDesc.Parent = NotifCard
+        NotifDesc.BackgroundTransparency = 1.000
+        NotifDesc.Position = UDim2.new(0, 12, 0, 32)
+        NotifDesc.Size = UDim2.new(1, -16, 0, 34)
+        NotifDesc.Font = Enum.Font.Gotham
+        NotifDesc.Text = textdesc
+        NotifDesc.TextColor3 = Color3.fromRGB(180, 180, 180)
+        NotifDesc.TextSize = 12
+        NotifDesc.TextWrapped = true
+        NotifDesc.TextXAlignment = Enum.TextXAlignment.Left
+        NotifDesc.TextYAlignment = Enum.TextYAlignment.Top
+        NotifDesc.ZIndex = 21
+
+        NotifBtn.Name = "NotifBtn"
+        NotifBtn.Parent = NotifCard
+        NotifBtn.BackgroundColor3 = PresetColor
+        NotifBtn.BorderSizePixel = 0
+        NotifBtn.Position = UDim2.new(0, 12, 1, -32)
+        NotifBtn.Size = UDim2.new(1, -24, 0, 22)
+        NotifBtn.AutoButtonColor = false
+        NotifBtn.Font = Enum.Font.SourceSans
+        NotifBtn.Text = ""
+        NotifBtn.ZIndex = 21
+
+        NotifBtnCorner.CornerRadius = UDim.new(0, 4)
+        NotifBtnCorner.Parent = NotifBtn
+
+        NotifBtnLabel.Name = "NotifBtnLabel"
+        NotifBtnLabel.Parent = NotifBtn
+        NotifBtnLabel.BackgroundTransparency = 1.000
+        NotifBtnLabel.Size = UDim2.new(1, 0, 1, 0)
+        NotifBtnLabel.Font = Enum.Font.GothamBold
+        NotifBtnLabel.Text = textbtn
+        NotifBtnLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        NotifBtnLabel.TextSize = 12
+        NotifBtnLabel.ZIndex = 22
+
+        -- slide in
         TweenService:Create(
-            NotificationHold,
-            TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            {BackgroundTransparency = 0.7}
+            NotifCard,
+            TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+            {Position = targetX}
         ):Play()
-        wait(0.4)
 
-        NotificationFrame.Name = "NotificationFrame"
-        NotificationFrame.Parent = NotificationHold
-        NotificationFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-        NotificationFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-        NotificationFrame.BorderSizePixel = 0
-        NotificationFrame.ClipsDescendants = true
-        NotificationFrame.Position = UDim2.new(0.5, 0, 0.498432577, 0)
+        local function Dismiss()
+            TweenService:Create(
+                NotifCard,
+                TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In),
+                {Position = offscreenX}
+            ):Play()
+            wait(0.35)
+            NotifCard:Destroy()
+        end
 
-        NotificationFrame:TweenSize(
-            UDim2.new(0, 164, 0, 193),
-            Enum.EasingDirection.Out,
-            Enum.EasingStyle.Quart,
-            .6,
-            true
-        )
+        NotifBtn.MouseButton1Click:Connect(Dismiss)
 
-        OkayBtn.Name = "OkayBtn"
-        OkayBtn.Parent = NotificationFrame
-        OkayBtn.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
-        OkayBtn.Position = UDim2.new(0.0609756112, 0, 0.720207274, 0)
-        OkayBtn.Size = UDim2.new(0, 144, 0, 42)
-        OkayBtn.AutoButtonColor = false
-        OkayBtn.Font = Enum.Font.SourceSans
-        OkayBtn.Text = ""
-        OkayBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-        OkayBtn.TextSize = 14.000
-
-        OkayBtnCorner.CornerRadius = UDim.new(0, 5)
-        OkayBtnCorner.Name = "OkayBtnCorner"
-        OkayBtnCorner.Parent = OkayBtn
-
-        OkayBtnTitle.Name = "OkayBtnTitle"
-        OkayBtnTitle.Parent = OkayBtn
-        OkayBtnTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        OkayBtnTitle.BackgroundTransparency = 1.000
-        OkayBtnTitle.Position = UDim2.new(0.0763888881, 0, 0, 0)
-        OkayBtnTitle.Size = UDim2.new(0, 181, 0, 42)
-        OkayBtnTitle.Font = Enum.Font.Gotham
-        OkayBtnTitle.Text = textbtn
-        OkayBtnTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-        OkayBtnTitle.TextSize = 14.000
-        OkayBtnTitle.TextXAlignment = Enum.TextXAlignment.Left
-
-        NotificationTitle.Name = "NotificationTitle"
-        NotificationTitle.Parent = NotificationFrame
-        NotificationTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        NotificationTitle.BackgroundTransparency = 1.000
-        NotificationTitle.Position = UDim2.new(0.0670731738, 0, 0.0829015523, 0)
-        NotificationTitle.Size = UDim2.new(0, 143, 0, 26)
-        NotificationTitle.Font = Enum.Font.Gotham
-        NotificationTitle.Text = texttitle
-        NotificationTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-        NotificationTitle.TextSize = 18.000
-        NotificationTitle.TextXAlignment = Enum.TextXAlignment.Left
-
-        NotificationDesc.Name = "NotificationDesc"
-        NotificationDesc.Parent = NotificationFrame
-        NotificationDesc.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        NotificationDesc.BackgroundTransparency = 1.000
-        NotificationDesc.Position = UDim2.new(0.0670000017, 0, 0.218999997, 0)
-        NotificationDesc.Size = UDim2.new(0, 143, 0, 91)
-        NotificationDesc.Font = Enum.Font.Gotham
-        NotificationDesc.Text = textdesc
-        NotificationDesc.TextColor3 = Color3.fromRGB(255, 255, 255)
-        NotificationDesc.TextSize = 15.000
-        NotificationDesc.TextWrapped = true
-        NotificationDesc.TextXAlignment = Enum.TextXAlignment.Left
-        NotificationDesc.TextYAlignment = Enum.TextYAlignment.Top
-
-        OkayBtn.MouseEnter:Connect(
-            function()
-                TweenService:Create(
-                    OkayBtn,
-                    TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                    {BackgroundColor3 = Color3.fromRGB(37, 37, 37)}
-                ):Play()
-            end
-        )
-
-        OkayBtn.MouseLeave:Connect(
-            function()
-                TweenService:Create(
-                    OkayBtn,
-                    TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                    {BackgroundColor3 = Color3.fromRGB(34, 34, 34)}
-                ):Play()
-            end
-        )
-
-        OkayBtn.MouseButton1Click:Connect(
-            function()
-                NotificationFrame:TweenSize(
-                    UDim2.new(0, 0, 0, 0),
-                    Enum.EasingDirection.Out,
-                    Enum.EasingStyle.Quart,
-                    .6,
-                    true
-                )
-
-                wait(0.4)
-
-                TweenService:Create(
-                    NotificationHold,
-                    TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                    {BackgroundTransparency = 1}
-                ):Play()
-
-                wait(.3)
-
-                NotificationHold:Destroy()
-            end
-        )
+        -- hover tint on dismiss button
+        NotifBtn.MouseEnter:Connect(function()
+            TweenService:Create(
+                NotifBtn,
+                TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {BackgroundColor3 = Color3.fromRGB(
+                    math.min(255, PresetColor.R * 255 + 20),
+                    math.min(255, PresetColor.G * 255 + 20),
+                    math.min(255, PresetColor.B * 255 + 20)
+                )}
+            ):Play()
+        end)
+        NotifBtn.MouseLeave:Connect(function()
+            TweenService:Create(
+                NotifBtn,
+                TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {BackgroundColor3 = PresetColor}
+            ):Play()
+        end)
     end
     local tabhold = {}
     function tabhold:Tab(text, icon)
@@ -1493,7 +1490,7 @@ function lib:Window(text, preset, closebind)
         Tab.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         Tab.BackgroundTransparency = 1.000
         Tab.BorderSizePixel = 0
-        Tab.Position = UDim2.new(0.31400001, 0, 0.147, 0)
+        Tab.Position = UDim2.new(0, 176, 0, 47)
         Tab.Size = UDim2.new(0, 373, 0, 254)
         Tab.CanvasSize = UDim2.new(0, 0, 0, 0)
         Tab.ScrollBarThickness = 3
