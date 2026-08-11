@@ -6,7 +6,7 @@
 --   Creates the window. accentColor tints toggles/sliders/etc.
 --   closeKeybind (optional, defaults to RightControl) hides/shows
 --   the whole UI when pressed. Returns "win", used to make tabs.
-local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/nondevelopers/Vape-UiLibrary/main/source.luau"))()
+local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/nondevelopers/Vape-UiLibrary/main/source.lua"))()
 
 local win = lib:Window("Vape Ui Library PREVIEW", Color3.fromRGB(44, 120, 224), Enum.KeyCode.RightControl)
 
@@ -48,15 +48,14 @@ tab:Paragraph(
 --   if you want to rename it later.
 tab:Section("Buttons")
 
--- tab:Button(title, callback, hasSettings, icon)
+-- tab:Button(title, callback, hasSettings)
 --   A simple clickable button; callback runs on click.
 --   hasSettings (optional, true/false) adds a "..." to the button -
 --   right-click it (PC) or tap the dots (mobile) to open a small
 --   panel below it. Button returns an object with :Label(text) to
---   add rows to that panel. icon (optional, same as win:Tab's icon)
---   renders to the left of the title - see the Icons section below.
-tab:Button("Notification Button", function()
-    lib:Notification("Notification", "Hello!", "Hi!")
+--   add rows to that panel.
+tab:Button("Button", function()
+    lib:Notification("Notification", "Hello!")
 end)
 
 local button2 = tab:Button("Button 2", function()
@@ -67,26 +66,11 @@ button2:Label("Setting 1")
 button2:Label("Setting 2")
 button2:Label("Setting 3")
 
-tab:Section("Icons")
-
--- Button and Toggle both take an icon as their last argument, same
--- Lucide name (or raw asset link) that win:Tab takes. It renders to
--- the left of the title, same as tab icons do.
-tab:Button("Icon Button", function()
-    print("Icon button pressed")
-end, false, "star")
-
-tab:Toggle("Icon Toggle", false, function(t)
-    print(t)
-end, "bell")
-
 tab:Section("Controls")
 
--- tab:Toggle(title, default, callback, icon)
+-- tab:Toggle(title, default, callback)
 --   An on/off switch. default is the starting state (true/false).
 --   callback fires with the new state every time it's flipped.
---   icon (optional, same as win:Tab's icon) renders to the left of
---   the title - see the Icons section below.
 tab:Toggle("Toggle", false, function(t)
     print(t)
 end)
