@@ -1278,12 +1278,12 @@ function lib:Window(text, preset, closebind)
         ui:Destroy()
     end
 
-    function lib:Notification(texttitle, textdesc, textbtn)
+    function lib:Notification(texttitle, textdesc)
         -- Stack notifications so multiple ones don't overlap.
         -- Each new one sits above the previous by tracking how many
         -- are currently visible.
-        local NOTIF_W   = 220
-        local NOTIF_H   = 100
+        local NOTIF_W   = 190
+        local NOTIF_H   = 68
         local NOTIF_PAD = 12   -- gap from screen edge and between stacked notifs
 
         -- count existing live notifications so we can stack upward
@@ -1299,13 +1299,10 @@ function lib:Window(text, preset, closebind)
         local NotifAccent = Instance.new("Frame")
         local NotifTitle  = Instance.new("TextLabel")
         local NotifDesc   = Instance.new("TextLabel")
-        local NotifBtn    = Instance.new("TextButton")
-        local NotifBtnCorner = Instance.new("UICorner")
-        local NotifBtnLabel  = Instance.new("TextLabel")
 
         -- anchored bottom-right; slides in from off the right edge
-        local targetX  = UDim2.new(1, -(NOTIF_W + NOTIF_PAD), 1, -(NOTIF_PAD + NOTIF_H + stackIndex * (NOTIF_H + 8)))
-        local offscreenX = UDim2.new(1, NOTIF_W + 20,         1, -(NOTIF_PAD + NOTIF_H + stackIndex * (NOTIF_H + 8)))
+        local targetX    = UDim2.new(1, -(NOTIF_W + NOTIF_PAD), 1, -(NOTIF_PAD + NOTIF_H + stackIndex * (NOTIF_H + 8)))
+        local offscreenX = UDim2.new(1,   NOTIF_W + 20,         1, -(NOTIF_PAD + NOTIF_H + stackIndex * (NOTIF_H + 8)))
 
         NotifCard.Name = "NotifCard"
         NotifCard.Parent = ui
@@ -1330,52 +1327,28 @@ function lib:Window(text, preset, closebind)
         NotifTitle.Name = "NotifTitle"
         NotifTitle.Parent = NotifCard
         NotifTitle.BackgroundTransparency = 1.000
-        NotifTitle.Position = UDim2.new(0, 12, 0, 10)
-        NotifTitle.Size = UDim2.new(1, -16, 0, 20)
+        NotifTitle.Position = UDim2.new(0, 12, 0, 9)
+        NotifTitle.Size = UDim2.new(1, -16, 0, 18)
         NotifTitle.Font = Enum.Font.GothamBold
         NotifTitle.Text = texttitle
         NotifTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-        NotifTitle.TextSize = 13
+        NotifTitle.TextSize = 12
         NotifTitle.TextXAlignment = Enum.TextXAlignment.Left
         NotifTitle.ZIndex = 21
 
         NotifDesc.Name = "NotifDesc"
         NotifDesc.Parent = NotifCard
         NotifDesc.BackgroundTransparency = 1.000
-        NotifDesc.Position = UDim2.new(0, 12, 0, 32)
-        NotifDesc.Size = UDim2.new(1, -16, 0, 34)
+        NotifDesc.Position = UDim2.new(0, 12, 0, 29)
+        NotifDesc.Size = UDim2.new(1, -16, 0, 30)
         NotifDesc.Font = Enum.Font.Gotham
         NotifDesc.Text = textdesc
         NotifDesc.TextColor3 = Color3.fromRGB(180, 180, 180)
-        NotifDesc.TextSize = 12
+        NotifDesc.TextSize = 11
         NotifDesc.TextWrapped = true
         NotifDesc.TextXAlignment = Enum.TextXAlignment.Left
         NotifDesc.TextYAlignment = Enum.TextYAlignment.Top
         NotifDesc.ZIndex = 21
-
-        NotifBtn.Name = "NotifBtn"
-        NotifBtn.Parent = NotifCard
-        NotifBtn.BackgroundColor3 = PresetColor
-        NotifBtn.BorderSizePixel = 0
-        NotifBtn.Position = UDim2.new(0, 12, 1, -32)
-        NotifBtn.Size = UDim2.new(1, -24, 0, 22)
-        NotifBtn.AutoButtonColor = false
-        NotifBtn.Font = Enum.Font.SourceSans
-        NotifBtn.Text = ""
-        NotifBtn.ZIndex = 21
-
-        NotifBtnCorner.CornerRadius = UDim.new(0, 4)
-        NotifBtnCorner.Parent = NotifBtn
-
-        NotifBtnLabel.Name = "NotifBtnLabel"
-        NotifBtnLabel.Parent = NotifBtn
-        NotifBtnLabel.BackgroundTransparency = 1.000
-        NotifBtnLabel.Size = UDim2.new(1, 0, 1, 0)
-        NotifBtnLabel.Font = Enum.Font.GothamBold
-        NotifBtnLabel.Text = textbtn
-        NotifBtnLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-        NotifBtnLabel.TextSize = 12
-        NotifBtnLabel.ZIndex = 22
 
         -- slide in
         TweenService:Create(
@@ -1384,6 +1357,7 @@ function lib:Window(text, preset, closebind)
             {Position = targetX}
         ):Play()
 
+        -- auto-dismiss after 4 seconds
         local function Dismiss()
             TweenService:Create(
                 NotifCard,
@@ -1394,27 +1368,12 @@ function lib:Window(text, preset, closebind)
             NotifCard:Destroy()
         end
 
-        NotifBtn.MouseButton1Click:Connect(Dismiss)
-
-        -- hover tint on dismiss button
-        NotifBtn.MouseEnter:Connect(function()
-            TweenService:Create(
-                NotifBtn,
-                TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                {BackgroundColor3 = Color3.fromRGB(
-                    math.min(255, PresetColor.R * 255 + 20),
-                    math.min(255, PresetColor.G * 255 + 20),
-                    math.min(255, PresetColor.B * 255 + 20)
-                )}
-            ):Play()
-        end)
-        NotifBtn.MouseLeave:Connect(function()
-            TweenService:Create(
-                NotifBtn,
-                TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                {BackgroundColor3 = PresetColor}
-            ):Play()
-        end)
+        coroutine.wrap(function()
+            wait(4)
+            if NotifCard and NotifCard.Parent then
+                Dismiss()
+            end
+        end)()
     end
     local tabhold = {}
     function tabhold:Tab(text, icon)
@@ -3155,8 +3114,7 @@ function lib:Window(text, preset, closebind)
         function()
             lib:Notification(
                 "Welcome",
-                string.format("Logged in as %s (@%s)", LocalPlayer.DisplayName, LocalPlayer.Name),
-                "Okay"
+                string.format("Logged in as %s (@%s)", LocalPlayer.DisplayName, LocalPlayer.Name)
             )
         end
     )()
