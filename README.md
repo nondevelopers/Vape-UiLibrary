@@ -25,14 +25,19 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/nondevelopers/Vape-Ui
 [+] added smooth animations: window fade in/out, tab content slide.  
 [+] added Updates tab to the example script.  
 [+] colorpicker now defaults to white.  
-[+] redesigned dropdown options as rounded buttons with a grey outline, hover effect, and an accent outline and check on the picked option.  
+[+] "Change UI Color" now defaults to white, and switches to black when the theme is Light.  
+[+] added `:Set(color)` to colorpickers, to set them from code.  
+[+] fixed colorpicker selectors starting in the wrong position.  
+[+] toggle knob now turns dark when the accent color is very light.  
+[-] removed the demo Colorpicker from the example script.  
+[+] redesigned dropdown options as rounded buttons with a hover effect, and an accent bar and check on the picked option.  
 [+] added window transparency option, elements follow at window + 0.25.  
 [+] added window size option (Vector2).  
 [+] redesigned Label to look like plain text instead of a button.  
 [+] moved Section headers higher.  
 [+] simplified the example script comments.  
 [+] fixed colorpicker box and textbox field position on custom window sizes.  
-[+] close and minimize buttons now fade in on hover when the window is transparent.
+[+] close and minimize buttons now fade in on hover when the window is transparent.  
 
 > 07/18/2026  
 [+] added support lucide icons for button, toggle.  
@@ -54,4 +59,4 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/nondevelopers/Vape-Ui
 [+] fixed color picker not working for mobile.  
 [+] fixed slider.  
 [+] added minimize button, close button.  
-[+] added a button for mobile users only to hide/show the ui.  
+[+] added a button for mobile users only to hide/show the ui.
