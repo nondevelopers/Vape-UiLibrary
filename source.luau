@@ -939,6 +939,8 @@ function lib:Window(text, preset, closebind, size, transparency)
     local winW = winSize.X
     local winH = winSize.Y
     local winTransparency = transparency or 0
+    -- elements sit 0.3 more transparent than the window (0.1 window -> 0.4 elements); fully opaque window keeps opaque elements
+    local elemT = winTransparency > 0 and math.min(winTransparency + 0.3, 1) or 0
     local contentH = winH - 65
     local tabW = winW - 187
     local elemW = tabW - 10
@@ -1004,6 +1006,7 @@ function lib:Window(text, preset, closebind, size, transparency)
     CloseBtn.Parent = Main
     CloseBtn.AnchorPoint = Vector2.new(1, 0)
     CloseBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    CloseBtn.BackgroundTransparency = winTransparency > 0 and 1 or 0
     CloseBtn.BorderSizePixel = 0
     CloseBtn.Position = UDim2.new(1, -12, 0, 9)
     CloseBtn.Size = UDim2.new(0, 23, 0, 23)
@@ -1032,6 +1035,7 @@ function lib:Window(text, preset, closebind, size, transparency)
     MinimizeBtn.Parent = Main
     MinimizeBtn.AnchorPoint = Vector2.new(1, 0)
     MinimizeBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    MinimizeBtn.BackgroundTransparency = winTransparency > 0 and 1 or 0
     MinimizeBtn.BorderSizePixel = 0
     MinimizeBtn.Position = UDim2.new(1, -40, 0, 9)
     MinimizeBtn.Size = UDim2.new(0, 23, 0, 23)
@@ -1061,7 +1065,7 @@ function lib:Window(text, preset, closebind, size, transparency)
             TweenService:Create(
                 CloseBtn,
                 TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                {BackgroundColor3 = Color3.fromRGB(190, 60, 60)}
+                {BackgroundColor3 = Color3.fromRGB(190, 60, 60), BackgroundTransparency = 0}
             ):Play()
         end
     )
@@ -1070,7 +1074,7 @@ function lib:Window(text, preset, closebind, size, transparency)
             TweenService:Create(
                 CloseBtn,
                 TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}
+                {BackgroundColor3 = Color3.fromRGB(30, 30, 30), BackgroundTransparency = winTransparency > 0 and 1 or 0}
             ):Play()
         end
     )
@@ -1080,7 +1084,7 @@ function lib:Window(text, preset, closebind, size, transparency)
             TweenService:Create(
                 MinimizeBtn,
                 TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}
+                {BackgroundColor3 = Color3.fromRGB(50, 50, 50), BackgroundTransparency = 0}
             ):Play()
         end
     )
@@ -1089,7 +1093,7 @@ function lib:Window(text, preset, closebind, size, transparency)
             TweenService:Create(
                 MinimizeBtn,
                 TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}
+                {BackgroundColor3 = Color3.fromRGB(30, 30, 30), BackgroundTransparency = winTransparency > 0 and 1 or 0}
             ):Play()
         end
     )
@@ -1545,6 +1549,7 @@ function lib:Window(text, preset, closebind, size, transparency)
             Button.Name = "Button"
             Button.Parent = Tab
             Button.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+            Button.BackgroundTransparency = elemT
             Button.ClipsDescendants = true
             Button.Size = UDim2.new(0, elemW, 0, 42)
             Button.AutoButtonColor = false
@@ -1771,6 +1776,7 @@ function lib:Window(text, preset, closebind, size, transparency)
             Toggle.Name = "Toggle"
             Toggle.Parent = Tab
             Toggle.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+            Toggle.BackgroundTransparency = elemT
             Toggle.Position = UDim2.new(0.215625003, 0, 0.446271926, 0)
             Toggle.Size = UDim2.new(0, elemW, 0, 42)
             Toggle.AutoButtonColor = false
@@ -1990,6 +1996,7 @@ function lib:Window(text, preset, closebind, size, transparency)
             Slider.Name = "Slider"
             Slider.Parent = Tab
             Slider.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+            Slider.BackgroundTransparency = elemT
             Slider.Position = UDim2.new(-0.48035714, 0, -0.570532918, 0)
             Slider.Size = UDim2.new(0, elemW, 0, 60)
             Slider.AutoButtonColor = false
@@ -2114,8 +2121,17 @@ function lib:Window(text, preset, closebind, size, transparency)
         end
         function tabcontent:Dropdown(text, list, callback)
             local droptog = false
-            local framesize = 0
-            local itemcount = 0
+            local selected = nil
+            local itemRefs = {}
+            local ITEM_H = 28
+            local ITEM_GAP = 4
+            local MAX_VISIBLE = 3
+            local count = #list
+            local visible = math.min(count, MAX_VISIBLE)
+            local holderH = visible * ITEM_H + math.max(visible - 1, 0) * ITEM_GAP
+            local needsScroll = count > MAX_VISIBLE
+            local holderW = elemW - 16
+            local openH = 48 + holderH + 8
 
             local Dropdown = Instance.new("Frame")
             local DropdownCorner = Instance.new("UICorner")
@@ -2128,8 +2144,8 @@ function lib:Window(text, preset, closebind, size, transparency)
             Dropdown.Name = "Dropdown"
             Dropdown.Parent = Tab
             Dropdown.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+            Dropdown.BackgroundTransparency = elemT
             Dropdown.ClipsDescendants = true
-            Dropdown.Position = UDim2.new(-0.541071415, 0, -0.532915354, 0)
             Dropdown.Size = UDim2.new(0, elemW, 0, 42)
 
             DropdownCorner.CornerRadius = UDim.new(0, 5)
@@ -2138,160 +2154,199 @@ function lib:Window(text, preset, closebind, size, transparency)
 
             DropdownBtn.Name = "DropdownBtn"
             DropdownBtn.Parent = Dropdown
-            DropdownBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             DropdownBtn.BackgroundTransparency = 1.000
             DropdownBtn.Size = UDim2.new(0, elemW, 0, 42)
             DropdownBtn.Font = Enum.Font.SourceSans
             DropdownBtn.Text = ""
-            DropdownBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
             DropdownBtn.TextSize = 14.000
 
             DropdownTitle.Name = "DropdownTitle"
             DropdownTitle.Parent = Dropdown
-            DropdownTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             DropdownTitle.BackgroundTransparency = 1.000
             DropdownTitle.Position = UDim2.new(0.0358126722, 0, 0, 0)
-            DropdownTitle.Size = UDim2.new(0, 187, 0, 42)
+            DropdownTitle.Size = UDim2.new(0, elemW - 70, 0, 42)
             DropdownTitle.Font = Enum.Font.Gotham
             DropdownTitle.Text = text
             DropdownTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
             DropdownTitle.TextSize = 14.000
+            DropdownTitle.TextTruncate = Enum.TextTruncate.AtEnd
             DropdownTitle.TextXAlignment = Enum.TextXAlignment.Left
 
             ArrowImg.Name = "ArrowImg"
-            ArrowImg.Parent = DropdownTitle
-            ArrowImg.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            ArrowImg.Parent = Dropdown
+            ArrowImg.AnchorPoint = Vector2.new(1, 0)
             ArrowImg.BackgroundTransparency = 1.000
-            ArrowImg.Position = UDim2.new(1.65240645, 0, 0.190476194, 0)
+            ArrowImg.Position = UDim2.new(1, -9, 0, 8)
             ArrowImg.Size = UDim2.new(0, 26, 0, 26)
             ArrowImg.Image = "http://www.roblox.com/asset/?id=6034818375"
 
             DropItemHolder.Name = "DropItemHolder"
-            DropItemHolder.Parent = DropdownTitle
+            DropItemHolder.Parent = Dropdown
             DropItemHolder.Active = true
-            DropItemHolder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             DropItemHolder.BackgroundTransparency = 1.000
             DropItemHolder.BorderSizePixel = 0
-            DropItemHolder.Position = UDim2.new(-0.00400000019, 0, 1.04999995, 0)
-            DropItemHolder.Size = UDim2.new(0, elemW - 21, 0, 0)
+            DropItemHolder.Position = UDim2.new(0, 8, 0, 48)
+            DropItemHolder.Size = UDim2.new(0, holderW, 0, holderH)
             DropItemHolder.CanvasSize = UDim2.new(0, 0, 0, 0)
-            DropItemHolder.ScrollBarThickness = 3
+            DropItemHolder.ScrollBarThickness = needsScroll and 2 or 0
+            DropItemHolder.ScrollBarImageColor3 = Color3.fromRGB(90, 90, 90)
 
             DropLayout.Name = "DropLayout"
             DropLayout.Parent = DropItemHolder
             DropLayout.SortOrder = Enum.SortOrder.LayoutOrder
+            DropLayout.Padding = UDim.new(0, ITEM_GAP)
+
+            local function SetOpen(open)
+                droptog = open
+                Dropdown:TweenSize(
+                    UDim2.new(0, elemW, 0, open and openH or 42),
+                    Enum.EasingDirection.Out,
+                    Enum.EasingStyle.Quart,
+                    .2,
+                    true
+                )
+                TweenService:Create(
+                    ArrowImg,
+                    TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                    {Rotation = open and 270 or 0}
+                ):Play()
+                wait(.2)
+                Tab.CanvasSize = UDim2.new(0, 0, 0, TabLayout.AbsoluteContentSize.Y)
+            end
 
             DropdownBtn.MouseButton1Click:Connect(
                 function()
-                    if droptog == false then
-                        Dropdown:TweenSize(
-                            UDim2.new(0, elemW, 0, 55 + framesize),
-                            Enum.EasingDirection.Out,
-                            Enum.EasingStyle.Quart,
-                            .2,
-                            true
-                        )
-                        TweenService:Create(
-                            ArrowImg,
-                            TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                            {Rotation = 270}
-                        ):Play()
-                        wait(.2)
-                        Tab.CanvasSize = UDim2.new(0, 0, 0, TabLayout.AbsoluteContentSize.Y)
-                    else
-                        Dropdown:TweenSize(
-                            UDim2.new(0, elemW, 0, 42),
-                            Enum.EasingDirection.Out,
-                            Enum.EasingStyle.Quart,
-                            .2,
-                            true
-                        )
-                        TweenService:Create(
-                            ArrowImg,
-                            TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                            {Rotation = 0}
-                        ):Play()
-                        wait(.2)
-                        Tab.CanvasSize = UDim2.new(0, 0, 0, TabLayout.AbsoluteContentSize.Y)
-                    end
-                    droptog = not droptog
+                    SetOpen(not droptog)
                 end
             )
 
-            for i, v in next, list do
-                itemcount = itemcount + 1
-                if itemcount <= 3 then
-                    framesize = framesize + 26
-                    DropItemHolder.Size = UDim2.new(0, elemW - 21, 0, framesize)
+            -- resting look of one option row, depending on whether it is the picked one
+            local function Restyle(ref, hovering)
+                local isSel = (selected == ref.name)
+                local bg = isSel and Color3.fromRGB(48, 48, 48) or Color3.fromRGB(40, 40, 40)
+                if hovering then
+                    bg = Color3.fromRGB(56, 56, 56)
                 end
+                TweenService:Create(
+                    ref.btn,
+                    TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                    {
+                        BackgroundColor3 = bg,
+                        TextColor3 = (isSel or hovering) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(185, 185, 185)
+                    }
+                ):Play()
+                ref.stroke.Color = isSel and PresetColor or Color3.fromRGB(58, 58, 58)
+                ref.bar.Visible = isSel
+                ref.bar.BackgroundColor3 = PresetColor
+                ref.check.Visible = isSel
+                ref.check.ImageColor3 = PresetColor
+            end
+
+            for i, v in next, list do
                 local Item = Instance.new("TextButton")
                 local ItemCorner = Instance.new("UICorner")
+                local ItemStroke = Instance.new("UIStroke")
+                local ItemPad = Instance.new("UIPadding")
+                local ItemBar = Instance.new("Frame")
+                local ItemBarCorner = Instance.new("UICorner")
+                local ItemCheck = Instance.new("ImageLabel")
 
                 Item.Name = "Item"
                 Item.Parent = DropItemHolder
-                Item.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
-                Item.ClipsDescendants = true
-                Item.Size = UDim2.new(0, elemW - 28, 0, 25)
+                Item.LayoutOrder = i
+                Item.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                Item.BackgroundTransparency = math.max(elemT - 0.15, 0)
+                Item.Size = UDim2.new(0, holderW - (needsScroll and 6 or 0), 0, ITEM_H)
                 Item.AutoButtonColor = false
                 Item.Font = Enum.Font.Gotham
-                Item.Text = v
-                Item.TextColor3 = Color3.fromRGB(220, 220, 220)
+                Item.Text = tostring(v)
+                Item.TextColor3 = Color3.fromRGB(185, 185, 185)
                 Item.TextSize = 13.000
+                Item.TextXAlignment = Enum.TextXAlignment.Left
 
-                ItemCorner.CornerRadius = UDim.new(0, 4)
+                ItemPad.Parent = Item
+                ItemPad.PaddingLeft = UDim.new(0, 16)
+                ItemPad.PaddingRight = UDim.new(0, 30)
+
+                ItemCorner.CornerRadius = UDim.new(0, 5)
                 ItemCorner.Name = "ItemCorner"
                 ItemCorner.Parent = Item
 
-                local ItemStroke = Instance.new("UIStroke")
                 ItemStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-                ItemStroke.Color = Color3.fromRGB(60, 60, 60)
+                ItemStroke.Color = Color3.fromRGB(58, 58, 58)
                 ItemStroke.Thickness = 1
+                ItemStroke.Transparency = 0.2
                 ItemStroke.Parent = Item
+
+                -- accent bar on the left, only shown on the picked option
+                ItemBar.Name = "ItemBar"
+                ItemBar.Parent = Item
+                ItemBar.AnchorPoint = Vector2.new(0, 0.5)
+                ItemBar.BackgroundColor3 = PresetColor
+                ItemBar.BorderSizePixel = 0
+                ItemBar.Position = UDim2.new(0, -10, 0.5, 0)
+                ItemBar.Size = UDim2.new(0, 3, 0, 14)
+                ItemBar.Visible = false
+
+                ItemBarCorner.CornerRadius = UDim.new(1, 0)
+                ItemBarCorner.Parent = ItemBar
+
+                -- check mark on the right, only shown on the picked option
+                ItemCheck.Name = "ItemCheck"
+                ItemCheck.Parent = Item
+                ItemCheck.AnchorPoint = Vector2.new(1, 0.5)
+                ItemCheck.BackgroundTransparency = 1.000
+                ItemCheck.Position = UDim2.new(1, 22, 0.5, 0)
+                ItemCheck.Size = UDim2.new(0, 14, 0, 14)
+                ItemCheck.Image = LucideIcons["check"]
+                ItemCheck.ImageColor3 = PresetColor
+                ItemCheck.Visible = false
+
+                local ref = {name = v, btn = Item, stroke = ItemStroke, bar = ItemBar, check = ItemCheck}
+                itemRefs[#itemRefs + 1] = ref
 
                 Item.MouseEnter:Connect(
                     function()
-                        TweenService:Create(
-                            Item,
-                            TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                            {BackgroundColor3 = Color3.fromRGB(55, 55, 55)}
-                        ):Play()
+                        Restyle(ref, true)
                     end
                 )
 
                 Item.MouseLeave:Connect(
                     function()
-                        TweenService:Create(
-                            Item,
-                            TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                            {BackgroundColor3 = Color3.fromRGB(42, 42, 42)}
-                        ):Play()
+                        Restyle(ref, false)
                     end
                 )
 
                 Item.MouseButton1Click:Connect(
                     function()
-                        droptog = not droptog
-                        DropdownTitle.Text = text .. " - " .. v
+                        selected = v
+                        DropdownTitle.Text = text .. " - " .. tostring(v)
+                        for _, r in ipairs(itemRefs) do
+                            Restyle(r, r == ref)
+                        end
                         pcall(callback, v)
-                        Dropdown:TweenSize(
-                            UDim2.new(0, elemW, 0, 42),
-                            Enum.EasingDirection.Out,
-                            Enum.EasingStyle.Quart,
-                            .2,
-                            true
-                        )
-                        TweenService:Create(
-                            ArrowImg,
-                            TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                            {Rotation = 0}
-                        ):Play()
-                        wait(.2)
-                        Tab.CanvasSize = UDim2.new(0, 0, 0, TabLayout.AbsoluteContentSize.Y)
+                        SetOpen(false)
                     end
                 )
-
-                DropItemHolder.CanvasSize = UDim2.new(0, 0, 0, DropLayout.AbsoluteContentSize.Y)
             end
+
+            DropItemHolder.CanvasSize = UDim2.new(0, 0, 0, count * ITEM_H + math.max(count - 1, 0) * ITEM_GAP)
+
+            -- keep the picked option's accent in sync with live theme changes
+            coroutine.wrap(
+                function()
+                    while wait() do
+                        for _, r in ipairs(itemRefs) do
+                            if selected == r.name then
+                                r.stroke.Color = PresetColor
+                                r.bar.BackgroundColor3 = PresetColor
+                                r.check.ImageColor3 = PresetColor
+                            end
+                        end
+                    end
+                end
+            )()
+
             Tab.CanvasSize = UDim2.new(0, 0, 0, TabLayout.AbsoluteContentSize.Y)
         end
         function tabcontent:Colorpicker(text, preset, callback)
@@ -2337,6 +2392,7 @@ function lib:Window(text, preset, closebind, size, transparency)
             Colorpicker.Name = "Colorpicker"
             Colorpicker.Parent = Tab
             Colorpicker.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+            Colorpicker.BackgroundTransparency = elemT
             Colorpicker.ClipsDescendants = true
             Colorpicker.Position = UDim2.new(-0.541071415, 0, -0.532915354, 0)
             Colorpicker.Size = UDim2.new(0, elemW, 0, 42)
@@ -2360,7 +2416,7 @@ function lib:Window(text, preset, closebind, size, transparency)
             BoxColor.Name = "BoxColor"
             BoxColor.Parent = ColorpickerTitle
             BoxColor.BackgroundColor3 = Color3.fromRGB(255, 0, 4)
-            BoxColor.Position = UDim2.new(1.60427809, 0, 0.214285716, 0)
+            BoxColor.Position = UDim2.new(0, elemW - math.floor(0.0358126722 * elemW) - 41 - 9, 0, 9)
             BoxColor.Size = UDim2.new(0, 41, 0, 23)
 
             BoxColorCorner.CornerRadius = UDim.new(0, 5)
@@ -2863,6 +2919,7 @@ function lib:Window(text, preset, closebind, size, transparency)
             Paragraph.Name = "Paragraph"
             Paragraph.Parent = Tab
             Paragraph.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+            Paragraph.BackgroundTransparency = elemT
             Paragraph.Size = UDim2.new(0, elemW, 0, cardHeight)
 
             ParagraphCorner.CornerRadius = UDim.new(0, 5)
@@ -2935,6 +2992,7 @@ function lib:Window(text, preset, closebind, size, transparency)
             Textbox.Name = "Textbox"
             Textbox.Parent = Tab
             Textbox.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+            Textbox.BackgroundTransparency = elemT
             Textbox.ClipsDescendants = true
             Textbox.Position = UDim2.new(-0.541071415, 0, -0.532915354, 0)
             Textbox.Size = UDim2.new(0, elemW, 0, 42)
@@ -2958,7 +3016,8 @@ function lib:Window(text, preset, closebind, size, transparency)
             TextboxFrame.Name = "TextboxFrame"
             TextboxFrame.Parent = TextboxTitle
             TextboxFrame.BackgroundColor3 = Color3.fromRGB(37, 37, 37)
-            TextboxFrame.Position = UDim2.new(1.28877008, 0, 0.214285716, 0)
+            TextboxFrame.BackgroundTransparency = elemT
+            TextboxFrame.Position = UDim2.new(0, elemW - math.floor(0.0358126722 * elemW) - 100 - 9, 0, 9)
             TextboxFrame.Size = UDim2.new(0, 100, 0, 23)
 
             TextboxFrameCorner.CornerRadius = UDim.new(0, 5)
@@ -2999,6 +3058,7 @@ function lib:Window(text, preset, closebind, size, transparency)
             Bind.Name = "Bind"
             Bind.Parent = Tab
             Bind.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+            Bind.BackgroundTransparency = elemT
             Bind.Size = UDim2.new(0, elemW, 0, 42)
             Bind.AutoButtonColor = false
             Bind.Font = Enum.Font.SourceSans
@@ -3084,6 +3144,7 @@ function lib:Window(text, preset, closebind, size, transparency)
             Section.TextColor3 = PresetColor
             Section.TextSize = 13.000
             Section.TextXAlignment = Enum.TextXAlignment.Left
+            Section.TextYAlignment = Enum.TextYAlignment.Top
             Section.TextTransparency = 1.000
 
             coroutine.wrap(
