@@ -81,6 +81,29 @@ tab:Label("Label")
 -- ── Updates tab (changelog, newest first) ─────────────────────────────────────
 local updates = win:Tab("Updates", "history")
 
+updates:Paragraph("10/02/2026",
+    "[+] rounded the window and elements slightly.\n" ..
+    "[+] added Light, Dark and Black themes, with a smooth fade when switching.\n" ..
+    "[+] added lib:SetTheme(name) and lib:GetTheme().\n" ..
+    "[+] added theme dropdown to the Settings tab.\n" ..
+    "[+] added theme option to lib:Window.\n" ..
+    "[+] added smooth animations: window fade in/out, tab content slide.\n" ..
+    "[+] added Updates tab to the example script.\n" ..
+    "[+] colorpicker now defaults to white.\n" ..
+    "[+] \"Change UI Color\" now defaults to white, and switches to black when the theme is Light.\n" ..
+    "[+] added :Set(color) to colorpickers, to set them from code.\n" ..
+    "[+] fixed colorpicker selectors starting in the wrong position.\n" ..
+    "[+] toggle knob now turns dark when the accent color is very light.\n" ..
+    "[-] removed the demo Colorpicker from the example script.\n" ..
+    "[+] redesigned dropdown options as rounded buttons with a hover effect, and an accent bar and check on the picked option.\n" ..
+    "[+] added window transparency option, elements follow at window + 0.25.\n" ..
+    "[+] added window size option (Vector2).\n" ..
+    "[+] redesigned Label to look like plain text instead of a button.\n" ..
+    "[+] moved Section headers higher.\n" ..
+    "[+] simplified the example script comments.\n" ..
+    "[+] fixed colorpicker box and textbox field position on custom window sizes.\n" ..
+    "[+] close and minimize buttons now fade in on hover when the window is transparent.")
+
 updates:Paragraph("07/18/2026",
     "[+] added support lucide icons for button, toggle.")
 
