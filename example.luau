@@ -4,16 +4,18 @@ local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/nondevelo
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- lib:Window(title, accentColor, closeKeybind, size, transparency)
+-- lib:Window(title, accentColor, closeKeybind, size, transparency, theme)
 --   size          Vector2  window dimensions, default Vector2.new(560, 319)
 --   transparency  number   window transparency 0-1, default 0 (opaque)
---                          elements follow automatically: window + 0.3 (0.1 -> 0.4)
+--                          elements follow automatically: window + 0.25 (0.1 -> 0.35)
+--   theme         string   "Dark" (default), "Light" or "Black"
 local win = lib:Window(
     "Vape Ui Library PREVIEW",
     Color3.fromRGB(44, 120, 224),
     Enum.KeyCode.RightControl,
     Vector2.new(560, 360),  -- custom size
-    0.1                     -- slight transparency
+    0.1,                    -- slight transparency
+    "Dark"                  -- starting theme
 )
 
 -- win:Tab(title, icon)  →  returns a tab to add elements to.
@@ -60,7 +62,7 @@ tab:Dropdown("Dropdown", {"Option 1", "Option 2", "Option 3", "Option 4", "Optio
 end)
 
 -- tab:Colorpicker(title, defaultColor, callback)
-tab:Colorpicker("Colorpicker", Color3.fromRGB(255, 0, 0), function(t) print(t) end)
+tab:Colorpicker("Colorpicker", Color3.fromRGB(255, 255, 255), function(t) print(t) end)
 
 tab:Section("Text & Binds")
 
@@ -80,6 +82,11 @@ settings:Section("Appearance")
 -- lib:ChangePresetColor(color)  —  re-themes toggles, sliders, tab indicators live.
 settings:Colorpicker("Change UI Color", Color3.fromRGB(44, 120, 224), function(t)
     lib:ChangePresetColor(Color3.fromRGB(t.R * 255, t.G * 255, t.B * 255))
+end)
+
+-- lib:SetTheme("Dark" | "Light" | "Black")  —  fades the whole UI to the new theme.
+settings:Dropdown("Theme", {"Dark", "Light", "Black"}, function(t)
+    lib:SetTheme(t)
 end)
 
 settings:Section("Danger Zone")
