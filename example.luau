@@ -4,6 +4,12 @@ local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/nondevelo
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
+-- Accent color: white, or black when the theme is Light.
+local THEME = "Dark"  -- "Dark", "Light" or "Black"
+local function accentFor(theme)
+    return theme == "Light" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)
+end
+
 -- lib:Window(title, accentColor, closeKeybind, size, transparency, theme)
 --   size          Vector2  window dimensions, default Vector2.new(560, 319)
 --   transparency  number   window transparency 0-1, default 0 (opaque)
@@ -11,11 +17,11 @@ local LocalPlayer = Players.LocalPlayer
 --   theme         string   "Dark" (default), "Light" or "Black"
 local win = lib:Window(
     "Vape Ui Library PREVIEW",
-    Color3.fromRGB(44, 120, 224),
+    accentFor(THEME),
     Enum.KeyCode.RightControl,
     Vector2.new(560, 360),  -- custom size
     0.1,                    -- slight transparency
-    "Dark"                  -- starting theme
+    THEME                   -- starting theme
 )
 
 -- win:Tab(title, icon)  →  returns a tab to add elements to.
@@ -61,9 +67,6 @@ tab:Dropdown("Dropdown", {"Option 1", "Option 2", "Option 3", "Option 4", "Optio
     print(t)
 end)
 
--- tab:Colorpicker(title, defaultColor, callback)
-tab:Colorpicker("Colorpicker", Color3.fromRGB(255, 255, 255), function(t) print(t) end)
-
 tab:Section("Text & Binds")
 
 -- tab:Textbox(title, clearOnFocus, callback)  —  callback fires on Enter.
@@ -75,18 +78,45 @@ tab:Bind("Bind", Enum.KeyCode.RightShift, function() print("Pressed!") end)
 -- tab:Label(text)  —  plain informational text row, no interaction.
 tab:Label("Label")
 
+-- ── Updates tab (changelog, newest first) ─────────────────────────────────────
+local updates = win:Tab("Updates", "history")
+
+updates:Paragraph("07/18/2026",
+    "[+] added support lucide icons for button, toggle.")
+
+updates:Paragraph("07/17/2026",
+    "[+] added lucide icons.\n" ..
+    "[-] removed Movement tab.\n" ..
+    "[+] added paragraphs, with avatar.\n" ..
+    "[+] added drag to the mobile close/open button.")
+
+updates:Paragraph("07/16/2026",
+    "[+] added setting tab, with change theme, fully close ui.\n" ..
+    "[-] removed change theme tab.\n" ..
+    "[+] added section code.\n" ..
+    "[+] added movement tab.\n" ..
+    "[+] updated the example script.")
+
+updates:Paragraph("07/15/2026",
+    "[+] fixed color picker not working for mobile.\n" ..
+    "[+] fixed slider.\n" ..
+    "[+] added minimize button, close button.\n" ..
+    "[+] added a button for mobile users only to hide/show the ui.")
+
 -- ── Settings tab ──────────────────────────────────────────────────────────────
 local settings = win:Tab("Settings", "settings")
 settings:Section("Appearance")
 
 -- lib:ChangePresetColor(color)  —  re-themes toggles, sliders, tab indicators live.
-settings:Colorpicker("Change UI Color", Color3.fromRGB(44, 120, 224), function(t)
+local accentPicker = settings:Colorpicker("Change UI Color", accentFor(THEME), function(t)
     lib:ChangePresetColor(Color3.fromRGB(t.R * 255, t.G * 255, t.B * 255))
 end)
 
 -- lib:SetTheme("Dark" | "Light" | "Black")  —  fades the whole UI to the new theme.
+-- picker:Set(color)  —  sets a colorpicker from code (here: accent follows the theme).
 settings:Dropdown("Theme", {"Dark", "Light", "Black"}, function(t)
     lib:SetTheme(t)
+    accentPicker:Set(accentFor(t))
 end)
 
 settings:Section("Danger Zone")
