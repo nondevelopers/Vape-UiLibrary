@@ -1013,6 +1013,11 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
     local Title = Instance.new("TextLabel")
     local TabFolder = Instance.new("Folder")
     local DragFrame = Instance.new("Frame")
+    local MainCorner = Instance.new("UICorner")
+
+    MainCorner.CornerRadius = UDim.new(0, 9)
+    MainCorner.Name = "MainCorner"
+    MainCorner.Parent = Main
 
     Main.Name = "Main"
     Main.Parent = ui
@@ -1083,7 +1088,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
     CloseBtn.TextSize = 14.000
     CloseBtn.ZIndex = 5
 
-    CloseBtnCorner.CornerRadius = UDim.new(0, 5)
+    CloseBtnCorner.CornerRadius = UDim.new(0, 6)
     CloseBtnCorner.Name = "CloseBtnCorner"
     CloseBtnCorner.Parent = CloseBtn
 
@@ -1114,7 +1119,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
     MinimizeBtn.TextSize = 14.000
     MinimizeBtn.ZIndex = 5
 
-    MinimizeBtnCorner.CornerRadius = UDim.new(0, 5)
+    MinimizeBtnCorner.CornerRadius = UDim.new(0, 6)
     MinimizeBtnCorner.Name = "MinimizeBtnCorner"
     MinimizeBtnCorner.Parent = MinimizeBtn
 
@@ -1414,7 +1419,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
         NotifCard.Position = offscreenX
         NotifCard.ZIndex = 20
 
-        NotifCorner.CornerRadius = UDim.new(0, 6)
+        NotifCorner.CornerRadius = UDim.new(0, 8)
         NotifCorner.Parent = NotifCard
 
         -- thin accent bar on the left edge tinted with PresetColor
@@ -1660,7 +1665,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             Button.TextColor3 = Color3.fromRGB(0, 0, 0)
             Button.TextSize = 14.000
 
-            ButtonCorner.CornerRadius = UDim.new(0, 5)
+            ButtonCorner.CornerRadius = UDim.new(0, 7)
             ButtonCorner.Name = "ButtonCorner"
             ButtonCorner.Parent = Button
 
@@ -1892,7 +1897,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             Toggle.TextColor3 = Color3.fromRGB(0, 0, 0)
             Toggle.TextSize = 14.000
 
-            ToggleCorner.CornerRadius = UDim.new(0, 5)
+            ToggleCorner.CornerRadius = UDim.new(0, 7)
             ToggleCorner.Name = "ToggleCorner"
             ToggleCorner.Parent = Toggle
 
@@ -2118,7 +2123,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             Slider.TextColor3 = Color3.fromRGB(0, 0, 0)
             Slider.TextSize = 14.000
 
-            SliderCorner.CornerRadius = UDim.new(0, 5)
+            SliderCorner.CornerRadius = UDim.new(0, 7)
             SliderCorner.Name = "SliderCorner"
             SliderCorner.Parent = Slider
 
@@ -2265,7 +2270,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             Dropdown.ClipsDescendants = true
             Dropdown.Size = UDim2.new(0, elemW, 0, 42)
 
-            DropdownCorner.CornerRadius = UDim.new(0, 5)
+            DropdownCorner.CornerRadius = UDim.new(0, 7)
             DropdownCorner.Name = "DropdownCorner"
             DropdownCorner.Parent = Dropdown
 
@@ -2356,11 +2361,6 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
                         TextColor3 = (isSel or hovering) and G(255) or G(200)
                     }
                 ):Play()
-                TweenService:Create(
-                    ref.stroke,
-                    TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                    {Color = isSel and PresetColor or G(70)}
-                ):Play()
                 ref.bar.Visible = isSel
                 ref.bar.BackgroundColor3 = PresetColor
                 ref.check.Visible = isSel
@@ -2370,7 +2370,6 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             for i, v in next, list do
                 local Item = Instance.new("TextButton")
                 local ItemCorner = Instance.new("UICorner")
-                local ItemStroke = Instance.new("UIStroke")
                 local ItemPad = Instance.new("UIPadding")
                 local ItemBar = Instance.new("Frame")
                 local ItemBarCorner = Instance.new("UICorner")
@@ -2395,16 +2394,9 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
                 ItemPad.PaddingLeft = UDim.new(0, 16)
                 ItemPad.PaddingRight = UDim.new(0, 30)
 
-                ItemCorner.CornerRadius = UDim.new(0, 6)
+                ItemCorner.CornerRadius = UDim.new(0, 7)
                 ItemCorner.Name = "ItemCorner"
                 ItemCorner.Parent = Item
-
-                ItemStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-                ItemStroke.Color = G(70)
-                ItemStroke.Thickness = 1
-                ItemStroke.Transparency = 0
-                ItemStroke.Parent = Item
-                reg(ItemStroke, "Color", 70)
 
                 -- accent bar on the left, only shown on the picked option
                 ItemBar.Name = "ItemBar"
@@ -2430,7 +2422,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
                 ItemCheck.ImageColor3 = PresetColor
                 ItemCheck.Visible = false
 
-                local ref = {name = v, btn = Item, stroke = ItemStroke, bar = ItemBar, check = ItemCheck}
+                local ref = {name = v, btn = Item, bar = ItemBar, check = ItemCheck}
                 itemRefs[#itemRefs + 1] = ref
 
                 Item.MouseEnter:Connect(
@@ -2466,7 +2458,6 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
                     while wait() do
                         for _, r in ipairs(itemRefs) do
                             if selected == r.name then
-                                r.stroke.Color = PresetColor
                                 r.bar.BackgroundColor3 = PresetColor
                                 r.check.ImageColor3 = PresetColor
                             end
@@ -2527,7 +2518,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             Colorpicker.Position = UDim2.new(-0.541071415, 0, -0.532915354, 0)
             Colorpicker.Size = UDim2.new(0, elemW, 0, 42)
 
-            ColorpickerCorner.CornerRadius = UDim.new(0, 5)
+            ColorpickerCorner.CornerRadius = UDim.new(0, 7)
             ColorpickerCorner.Name = "ColorpickerCorner"
             ColorpickerCorner.Parent = Colorpicker
 
@@ -2550,7 +2541,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             BoxColor.Position = UDim2.new(0, elemW - math.floor(0.0358126722 * elemW) - 41 - 9, 0, 9)
             BoxColor.Size = UDim2.new(0, 41, 0, 23)
 
-            BoxColorCorner.CornerRadius = UDim.new(0, 5)
+            BoxColorCorner.CornerRadius = UDim.new(0, 7)
             BoxColorCorner.Name = "BoxColorCorner"
             BoxColorCorner.Parent = BoxColor
 
@@ -2566,7 +2557,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             ConfirmBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
             ConfirmBtn.TextSize = 14.000
 
-            ConfirmBtnCorner.CornerRadius = UDim.new(0, 5)
+            ConfirmBtnCorner.CornerRadius = UDim.new(0, 7)
             ConfirmBtnCorner.Name = "ConfirmBtnCorner"
             ConfirmBtnCorner.Parent = ConfirmBtn
 
@@ -2604,7 +2595,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             RainbowToggle.TextColor3 = Color3.fromRGB(0, 0, 0)
             RainbowToggle.TextSize = 14.000
 
-            RainbowToggleCorner.CornerRadius = UDim.new(0, 5)
+            RainbowToggleCorner.CornerRadius = UDim.new(0, 7)
             RainbowToggleCorner.Name = "RainbowToggleCorner"
             RainbowToggleCorner.Parent = RainbowToggle
 
@@ -3063,7 +3054,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             Paragraph.BackgroundTransparency = elemT
             Paragraph.Size = UDim2.new(0, elemW, 0, cardHeight)
 
-            ParagraphCorner.CornerRadius = UDim.new(0, 5)
+            ParagraphCorner.CornerRadius = UDim.new(0, 7)
             ParagraphCorner.Name = "ParagraphCorner"
             ParagraphCorner.Parent = Paragraph
 
@@ -3141,7 +3132,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             Textbox.Position = UDim2.new(-0.541071415, 0, -0.532915354, 0)
             Textbox.Size = UDim2.new(0, elemW, 0, 42)
 
-            TextboxCorner.CornerRadius = UDim.new(0, 5)
+            TextboxCorner.CornerRadius = UDim.new(0, 7)
             TextboxCorner.Name = "TextboxCorner"
             TextboxCorner.Parent = Textbox
 
@@ -3166,7 +3157,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             TextboxFrame.Position = UDim2.new(0, elemW - math.floor(0.0358126722 * elemW) - 100 - 9, 0, 9)
             TextboxFrame.Size = UDim2.new(0, 100, 0, 23)
 
-            TextboxFrameCorner.CornerRadius = UDim.new(0, 5)
+            TextboxFrameCorner.CornerRadius = UDim.new(0, 7)
             TextboxFrameCorner.Name = "TextboxFrameCorner"
             TextboxFrameCorner.Parent = TextboxFrame
 
@@ -3214,7 +3205,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             Bind.TextColor3 = Color3.fromRGB(0, 0, 0)
             Bind.TextSize = 14.000
 
-            BindCorner.CornerRadius = UDim.new(0, 5)
+            BindCorner.CornerRadius = UDim.new(0, 7)
             BindCorner.Name = "BindCorner"
             BindCorner.Parent = Bind
 
