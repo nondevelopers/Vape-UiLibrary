@@ -1,64 +1,39 @@
--- ============================================================
--- Vape UI Library - usage example
--- ============================================================
-
--- lib:Window(title, accentColor, closeKeybind)
---   Creates the window. accentColor tints toggles/sliders/etc.
---   closeKeybind (optional, defaults to RightControl) hides/shows
---   the whole UI when pressed. Returns "win", used to make tabs.
+-- Vape UI Library - example
 local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/nondevelopers/Vape-UiLibrary/main/source.luau"))()
-
-local win = lib:Window(
-    "Vape Ui Library PREVIEW",
-    Color3.fromRGB(44, 120, 224),
-    Enum.KeyCode.RightControl
-)
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- win:Tab(title, icon)
---   Adds a tab to the sidebar. Returns "tab", used to add elements
---   to that tab. Call win:Tab(...) again for more tabs. icon
---   (optional) is a Lucide icon name (e.g. "settings", "home",
---   "sword") - see the embedded LucideIcons table in the library
---   for the full list of ~800 names. You can also pass a raw
---   rbxassetid://, rbxthumb://, or http(s) image link instead of a
---   name if you want a custom icon.
-local tab = win:Tab(
-    "Tab 1",
-    "layout-grid"
+-- lib:Window(title, accentColor, closeKeybind, size, transparency)
+--   size          Vector2  window dimensions, default Vector2.new(560, 319)
+--   transparency  number   background transparency 0-1, default 0 (opaque)
+local win = lib:Window(
+    "Vape Ui Library PREVIEW",
+    Color3.fromRGB(44, 120, 224),
+    Enum.KeyCode.RightControl,
+    Vector2.new(560, 360),  -- custom size
+    0.1                     -- slight transparency
 )
 
--- tab:Paragraph(title, text, avatar)
---   A card with a bold title and a wrapped body of text below it.
---   avatar (optional - a userId number or username string) adds a
---   circular avatar thumbnail on the left.
-tab:Paragraph(
-    "About",
-    "This is an example UI built with the Vape UI Library. Every element on this page is just here to show what it looks like and how to call it."
-)
+-- win:Tab(title, icon)  →  returns a tab to add elements to.
+--   icon: Lucide name ("settings"), rbxassetid://, or https:// image link.
+local tab = win:Tab("Tab 1", "layout-grid")
 
+-- tab:Paragraph(title, text, avatar?)
+--   avatar: userId number or username string for a circular thumbnail on the left.
+tab:Paragraph("About", "Example UI showing every element in the library.")
 tab:Paragraph(
     "Player Info",
-    string.format("display: %s\nuser: %s\nuserid: %s", LocalPlayer.DisplayName, LocalPlayer.Name, LocalPlayer.UserId),
+    string.format("display: %s\nuser: %s\nuserid: %s",
+        LocalPlayer.DisplayName, LocalPlayer.Name, LocalPlayer.UserId),
     LocalPlayer.UserId
 )
 
--- tab:Section(text)
---   A lightweight header used to visually group the elements below
---   it - no background box, just bold text tinted with the window's
---   accent color, with a small gap above it (skipped if it's the
---   first thing in the tab). Returns an object with :Set(newText)
---   if you want to rename it later.
+-- tab:Section(text)  —  accent-colored group header. Returns :Set(newText).
 tab:Section("Buttons")
 
--- tab:Button(title, callback, hasSettings)
---   A simple clickable button; callback runs on click.
---   hasSettings (optional, true/false) adds a "..." to the button -
---   right-click it (PC) or tap the dots (mobile) to open a small
---   panel below it. Button returns an object with :Label(text) to
---   add rows to that panel.
+-- tab:Button(title, callback, hasSettings?)
+--   hasSettings: adds a "..." panel; use :Label(text) on the returned object to populate it.
 tab:Button("Button", function()
     lib:Notification("Notification", "Hello!")
 end)
@@ -66,76 +41,47 @@ end)
 local button2 = tab:Button("Button 2", function()
     print("Button 2 pressed")
 end, true)
-
 button2:Label("Setting 1")
 button2:Label("Setting 2")
 button2:Label("Setting 3")
 
 tab:Section("Controls")
 
-tab:Toggle("Toggle", false, function(t)
-    print(t)
-end)
+-- tab:Toggle(title, default, callback)
+tab:Toggle("Toggle", false, function(t) print(t) end)
 
--- fires continuously while dragging, not just on release
-tab:Slider("Slider", 0, 100, 30, function(t)
-    print(t)
-end)
+-- tab:Slider(title, min, max, start, callback)  —  fires continuously while dragging.
+tab:Slider("Slider", 0, 100, 30, function(t) print(t) end)
 
+-- tab:Dropdown(title, optionList, callback)
 tab:Dropdown("Dropdown", {"Option 1", "Option 2", "Option 3", "Option 4", "Option 5"}, function(t)
     print(t)
 end)
 
-tab:Colorpicker("Colorpicker", Color3.fromRGB(255, 0, 0), function(t)
-    print(t)
-end)
+-- tab:Colorpicker(title, defaultColor, callback)
+tab:Colorpicker("Colorpicker", Color3.fromRGB(255, 0, 0), function(t) print(t) end)
 
 tab:Section("Text & Binds")
 
--- tab:Textbox(title, clearOnFocus, callback)
---   A single-line text input. clearOnFocus (true/false) wipes the
---   box when clicked. callback fires with the typed text on enter.
-tab:Textbox("Textbox", true, function(t)
-    print(t)
-end)
+-- tab:Textbox(title, clearOnFocus, callback)  —  callback fires on Enter.
+tab:Textbox("Textbox", true, function(t) print(t) end)
 
--- tab:Bind(title, defaultKeycode, callback)
---   A rebindable keybind - click it, then press a key to change it.
---   callback fires (no arguments) whenever that key is pressed.
-tab:Bind("Bind", Enum.KeyCode.RightShift, function()
-    print("Pressed!")
-end)
+-- tab:Bind(title, defaultKeycode, callback)  —  click to rebind; callback fires on key press.
+tab:Bind("Bind", Enum.KeyCode.RightShift, function() print("Pressed!") end)
 
+-- tab:Label(text)  —  plain informational text row, no interaction.
 tab:Label("Label")
 
--- ============================================================
--- Settings tab - re-theme the UI live, and a "Fully Close" button
--- that removes the UI from the game entirely (not just hides it).
--- ============================================================
-local settings = win:Tab(
-    "Settings",
-    "settings"
-)
-
+-- ── Settings tab ──────────────────────────────────────────────────────────────
+local settings = win:Tab("Settings", "settings")
 settings:Section("Appearance")
 
--- tab:Colorpicker(...) + lib:ChangePresetColor(color)
---   Changes the accent color used by toggles/sliders/tab indicators/
---   etc. across the whole window, live.
+-- lib:ChangePresetColor(color)  —  re-themes toggles, sliders, tab indicators live.
 settings:Colorpicker("Change UI Color", Color3.fromRGB(44, 120, 224), function(t)
     lib:ChangePresetColor(Color3.fromRGB(t.R * 255, t.G * 255, t.B * 255))
 end)
 
 settings:Section("Danger Zone")
 
--- lib:Destroy()
---   Tears down the entire UI - the ScreenGui and everything inside
---   it (the panel, every tab, notifications, the mobile toggle
---   button). Use this for a "Fully Close" button: unlike the X
---   button or the closeKeybind (which just hide the panel and can
---   reopen it), Destroy() can't be undone from inside the script -
---   you'd need to loadstring the library again to bring the UI
---   back.
-settings:Button("Fully Close", function()
-    lib:Destroy()
-end)
+-- lib:Destroy()  —  removes the entire UI. Cannot be reopened without re-running the script.
+settings:Button("Fully Close", function() lib:Destroy() end)
