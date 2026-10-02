@@ -16,7 +16,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/nondevelopers/Vape-Ui
 
 ## updates
 
-> 10/02/2026
+> 10/02/2026  
 [+] rounded the window and elements slightly.  
 [+] added Light, Dark and Black themes, with a smooth fade when switching.  
 [+] added `lib:SetTheme(name)` and `lib:GetTheme()`.  
