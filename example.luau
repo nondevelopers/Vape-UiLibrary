@@ -6,7 +6,8 @@ local LocalPlayer = Players.LocalPlayer
 
 -- lib:Window(title, accentColor, closeKeybind, size, transparency)
 --   size          Vector2  window dimensions, default Vector2.new(560, 319)
---   transparency  number   background transparency 0-1, default 0 (opaque)
+--   transparency  number   window transparency 0-1, default 0 (opaque)
+--                          elements follow automatically: window + 0.3 (0.1 -> 0.4)
 local win = lib:Window(
     "Vape Ui Library PREVIEW",
     Color3.fromRGB(44, 120, 224),
