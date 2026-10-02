@@ -931,10 +931,17 @@ local function MakeDraggable(topbarobject, object)
     )
 end
 
-function lib:Window(text, preset, closebind)
+function lib:Window(text, preset, closebind, size, transparency)
     CloseBind = closebind or Enum.KeyCode.RightControl
     PresetColor = preset or Color3.fromRGB(44, 120, 224)
     fs = false
+    local winSize = size or Vector2.new(560, 319)
+    local winW = winSize.X
+    local winH = winSize.Y
+    local winTransparency = transparency or 0
+    local contentH = winH - 65
+    local tabW = winW - 187
+    local elemW = tabW - 10
     local Main = Instance.new("Frame")
     local TabHold = Instance.new("Frame")
     local TabHoldLayout = Instance.new("UIListLayout")
@@ -946,6 +953,7 @@ function lib:Window(text, preset, closebind)
     Main.Parent = ui
     Main.AnchorPoint = Vector2.new(0.5, 0.5)
     Main.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    Main.BackgroundTransparency = winTransparency
     Main.BorderSizePixel = 0
     Main.Position = UDim2.new(0.5, 0, 0.5, 0)
     Main.Size = UDim2.new(0, 0, 0, 0)
@@ -957,7 +965,7 @@ function lib:Window(text, preset, closebind)
     TabHold.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     TabHold.BackgroundTransparency = 1.000
     TabHold.Position = UDim2.new(0, 19, 0, 47)
-    TabHold.Size = UDim2.new(0, 107, 0, 254)
+    TabHold.Size = UDim2.new(0, 107, 0, contentH)
 
     TabHoldLayout.Name = "TabHoldLayout"
     TabHoldLayout.Parent = TabHold
@@ -980,10 +988,10 @@ function lib:Window(text, preset, closebind)
     DragFrame.Parent = Main
     DragFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     DragFrame.BackgroundTransparency = 1.000
-    DragFrame.Size = UDim2.new(0, 560, 0, 41)
+    DragFrame.Size = UDim2.new(0, winW, 0, 41)
 
-    local FullSize = UDim2.new(0, 560, 0, 319)
-    local MinimizedSize = UDim2.new(0, 560, 0, 41)
+    local FullSize = UDim2.new(0, winW, 0, winH)
+    local MinimizedSize = UDim2.new(0, winW, 0, 41)
 
     local CloseBtn = Instance.new("TextButton")
     local CloseBtnCorner = Instance.new("UICorner")
@@ -1451,7 +1459,7 @@ function lib:Window(text, preset, closebind)
         Tab.BackgroundTransparency = 1.000
         Tab.BorderSizePixel = 0
         Tab.Position = UDim2.new(0, 176, 0, 47)
-        Tab.Size = UDim2.new(0, 373, 0, 254)
+        Tab.Size = UDim2.new(0, tabW, 0, contentH)
         Tab.CanvasSize = UDim2.new(0, 0, 0, 0)
         Tab.ScrollBarThickness = 3
         Tab.Visible = false
@@ -1538,7 +1546,7 @@ function lib:Window(text, preset, closebind)
             Button.Parent = Tab
             Button.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
             Button.ClipsDescendants = true
-            Button.Size = UDim2.new(0, 363, 0, 42)
+            Button.Size = UDim2.new(0, elemW, 0, 42)
             Button.AutoButtonColor = false
             Button.Font = Enum.Font.SourceSans
             Button.Text = ""
@@ -1651,7 +1659,7 @@ function lib:Window(text, preset, closebind)
                 SettingsHolder.BackgroundTransparency = 1.000
                 SettingsHolder.BorderSizePixel = 0
                 SettingsHolder.Position = UDim2.new(0, 13, 0, 47)
-                SettingsHolder.Size = UDim2.new(0, 337, 0, 0)
+                SettingsHolder.Size = UDim2.new(0, elemW - 26, 0, 0)
                 SettingsHolder.CanvasSize = UDim2.new(0, 0, 0, 0)
                 SettingsHolder.ScrollBarThickness = 3
                 SettingsHolder.ZIndex = 2
@@ -1676,7 +1684,7 @@ function lib:Window(text, preset, closebind)
                     local visibleheight = RecalcSettingsHolder()
                     if settingsopen then
                         Button:TweenSize(
-                            UDim2.new(0, 363, 0, 52 + visibleheight),
+                            UDim2.new(0, elemW, 0, 52 + visibleheight),
                             Enum.EasingDirection.Out,
                             Enum.EasingStyle.Quart,
                             .2,
@@ -1684,7 +1692,7 @@ function lib:Window(text, preset, closebind)
                         )
                     else
                         Button:TweenSize(
-                            UDim2.new(0, 363, 0, 42),
+                            UDim2.new(0, elemW, 0, 42),
                             Enum.EasingDirection.Out,
                             Enum.EasingStyle.Quart,
                             .2,
@@ -1717,7 +1725,7 @@ function lib:Window(text, preset, closebind)
                     SettingLabel.Name = "SettingLabel"
                     SettingLabel.Parent = SettingsHolder
                     SettingLabel.BackgroundTransparency = 1.000
-                    SettingLabel.Size = UDim2.new(0, 337, 0, 22)
+                    SettingLabel.Size = UDim2.new(0, elemW - 26, 0, 22)
                     SettingLabel.Font = Enum.Font.Gotham
                     SettingLabel.Text = labeltext
                     SettingLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -1728,7 +1736,7 @@ function lib:Window(text, preset, closebind)
                     local visibleheight = RecalcSettingsHolder()
                     if settingsopen then
                         Button:TweenSize(
-                            UDim2.new(0, 363, 0, 52 + visibleheight),
+                            UDim2.new(0, elemW, 0, 52 + visibleheight),
                             Enum.EasingDirection.Out,
                             Enum.EasingStyle.Quart,
                             .2,
@@ -1764,7 +1772,7 @@ function lib:Window(text, preset, closebind)
             Toggle.Parent = Tab
             Toggle.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
             Toggle.Position = UDim2.new(0.215625003, 0, 0.446271926, 0)
-            Toggle.Size = UDim2.new(0, 363, 0, 42)
+            Toggle.Size = UDim2.new(0, elemW, 0, 42)
             Toggle.AutoButtonColor = false
             Toggle.Font = Enum.Font.SourceSans
             Toggle.Text = ""
@@ -1983,7 +1991,7 @@ function lib:Window(text, preset, closebind)
             Slider.Parent = Tab
             Slider.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
             Slider.Position = UDim2.new(-0.48035714, 0, -0.570532918, 0)
-            Slider.Size = UDim2.new(0, 363, 0, 60)
+            Slider.Size = UDim2.new(0, elemW, 0, 60)
             Slider.AutoButtonColor = false
             Slider.Font = Enum.Font.SourceSans
             Slider.Text = ""
@@ -2011,7 +2019,7 @@ function lib:Window(text, preset, closebind)
             SliderValue.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             SliderValue.BackgroundTransparency = 1.000
             SliderValue.Position = UDim2.new(0.0358126722, 0, 0, 0)
-            SliderValue.Size = UDim2.new(0, 335, 0, 42)
+            SliderValue.Size = UDim2.new(0, elemW - 28, 0, 42)
             SliderValue.Font = Enum.Font.Gotham
             SliderValue.Text = tostring(start and math.floor((start / max) * (max - min) + min) or 0)
             SliderValue.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -2023,7 +2031,7 @@ function lib:Window(text, preset, closebind)
             SlideFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
             SlideFrame.BorderSizePixel = 0
             SlideFrame.Position = UDim2.new(0.0342647657, 0, 0.686091602, 0)
-            SlideFrame.Size = UDim2.new(0, 335, 0, 3)
+            SlideFrame.Size = UDim2.new(0, elemW - 28, 0, 3)
 
             CurrentValueFrame.Name = "CurrentValueFrame"
             CurrentValueFrame.Parent = SlideFrame
@@ -2122,7 +2130,7 @@ function lib:Window(text, preset, closebind)
             Dropdown.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
             Dropdown.ClipsDescendants = true
             Dropdown.Position = UDim2.new(-0.541071415, 0, -0.532915354, 0)
-            Dropdown.Size = UDim2.new(0, 363, 0, 42)
+            Dropdown.Size = UDim2.new(0, elemW, 0, 42)
 
             DropdownCorner.CornerRadius = UDim.new(0, 5)
             DropdownCorner.Name = "DropdownCorner"
@@ -2132,7 +2140,7 @@ function lib:Window(text, preset, closebind)
             DropdownBtn.Parent = Dropdown
             DropdownBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             DropdownBtn.BackgroundTransparency = 1.000
-            DropdownBtn.Size = UDim2.new(0, 363, 0, 42)
+            DropdownBtn.Size = UDim2.new(0, elemW, 0, 42)
             DropdownBtn.Font = Enum.Font.SourceSans
             DropdownBtn.Text = ""
             DropdownBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -2165,7 +2173,7 @@ function lib:Window(text, preset, closebind)
             DropItemHolder.BackgroundTransparency = 1.000
             DropItemHolder.BorderSizePixel = 0
             DropItemHolder.Position = UDim2.new(-0.00400000019, 0, 1.04999995, 0)
-            DropItemHolder.Size = UDim2.new(0, 342, 0, 0)
+            DropItemHolder.Size = UDim2.new(0, elemW - 21, 0, 0)
             DropItemHolder.CanvasSize = UDim2.new(0, 0, 0, 0)
             DropItemHolder.ScrollBarThickness = 3
 
@@ -2177,7 +2185,7 @@ function lib:Window(text, preset, closebind)
                 function()
                     if droptog == false then
                         Dropdown:TweenSize(
-                            UDim2.new(0, 363, 0, 55 + framesize),
+                            UDim2.new(0, elemW, 0, 55 + framesize),
                             Enum.EasingDirection.Out,
                             Enum.EasingStyle.Quart,
                             .2,
@@ -2192,7 +2200,7 @@ function lib:Window(text, preset, closebind)
                         Tab.CanvasSize = UDim2.new(0, 0, 0, TabLayout.AbsoluteContentSize.Y)
                     else
                         Dropdown:TweenSize(
-                            UDim2.new(0, 363, 0, 42),
+                            UDim2.new(0, elemW, 0, 42),
                             Enum.EasingDirection.Out,
                             Enum.EasingStyle.Quart,
                             .2,
@@ -2214,32 +2222,38 @@ function lib:Window(text, preset, closebind)
                 itemcount = itemcount + 1
                 if itemcount <= 3 then
                     framesize = framesize + 26
-                    DropItemHolder.Size = UDim2.new(0, 342, 0, framesize)
+                    DropItemHolder.Size = UDim2.new(0, elemW - 21, 0, framesize)
                 end
                 local Item = Instance.new("TextButton")
                 local ItemCorner = Instance.new("UICorner")
 
                 Item.Name = "Item"
                 Item.Parent = DropItemHolder
-                Item.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+                Item.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
                 Item.ClipsDescendants = true
-                Item.Size = UDim2.new(0, 335, 0, 25)
+                Item.Size = UDim2.new(0, elemW - 28, 0, 25)
                 Item.AutoButtonColor = false
                 Item.Font = Enum.Font.Gotham
                 Item.Text = v
-                Item.TextColor3 = Color3.fromRGB(255, 255, 255)
-                Item.TextSize = 15.000
+                Item.TextColor3 = Color3.fromRGB(220, 220, 220)
+                Item.TextSize = 13.000
 
                 ItemCorner.CornerRadius = UDim.new(0, 4)
                 ItemCorner.Name = "ItemCorner"
                 ItemCorner.Parent = Item
 
+                local ItemStroke = Instance.new("UIStroke")
+                ItemStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                ItemStroke.Color = Color3.fromRGB(60, 60, 60)
+                ItemStroke.Thickness = 1
+                ItemStroke.Parent = Item
+
                 Item.MouseEnter:Connect(
                     function()
                         TweenService:Create(
                             Item,
-                            TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                            {BackgroundColor3 = Color3.fromRGB(37, 37, 37)}
+                            TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                            {BackgroundColor3 = Color3.fromRGB(55, 55, 55)}
                         ):Play()
                     end
                 )
@@ -2248,8 +2262,8 @@ function lib:Window(text, preset, closebind)
                     function()
                         TweenService:Create(
                             Item,
-                            TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                            {BackgroundColor3 = Color3.fromRGB(34, 34, 34)}
+                            TweenInfo.new(.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                            {BackgroundColor3 = Color3.fromRGB(42, 42, 42)}
                         ):Play()
                     end
                 )
@@ -2260,7 +2274,7 @@ function lib:Window(text, preset, closebind)
                         DropdownTitle.Text = text .. " - " .. v
                         pcall(callback, v)
                         Dropdown:TweenSize(
-                            UDim2.new(0, 363, 0, 42),
+                            UDim2.new(0, elemW, 0, 42),
                             Enum.EasingDirection.Out,
                             Enum.EasingStyle.Quart,
                             .2,
@@ -2325,7 +2339,7 @@ function lib:Window(text, preset, closebind)
             Colorpicker.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
             Colorpicker.ClipsDescendants = true
             Colorpicker.Position = UDim2.new(-0.541071415, 0, -0.532915354, 0)
-            Colorpicker.Size = UDim2.new(0, 363, 0, 42)
+            Colorpicker.Size = UDim2.new(0, elemW, 0, 42)
 
             ColorpickerCorner.CornerRadius = UDim.new(0, 5)
             ColorpickerCorner.Name = "ColorpickerCorner"
@@ -2383,7 +2397,7 @@ function lib:Window(text, preset, closebind)
             ColorpickerBtn.Parent = ColorpickerTitle
             ColorpickerBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             ColorpickerBtn.BackgroundTransparency = 1.000
-            ColorpickerBtn.Size = UDim2.new(0, 363, 0, 42)
+            ColorpickerBtn.Size = UDim2.new(0, elemW, 0, 42)
             ColorpickerBtn.Font = Enum.Font.SourceSans
             ColorpickerBtn.Text = ""
             ColorpickerBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -2524,7 +2538,7 @@ function lib:Window(text, preset, closebind)
                         ColorSelection.Visible = true
                         HueSelection.Visible = true
                         Colorpicker:TweenSize(
-                            UDim2.new(0, 363, 0, 132),
+                            UDim2.new(0, elemW, 0, 132),
                             Enum.EasingDirection.Out,
                             Enum.EasingStyle.Quart,
                             .2,
@@ -2536,7 +2550,7 @@ function lib:Window(text, preset, closebind)
                         ColorSelection.Visible = false
                         HueSelection.Visible = false
                         Colorpicker:TweenSize(
-                            UDim2.new(0, 363, 0, 42),
+                            UDim2.new(0, elemW, 0, 42),
                             Enum.EasingDirection.Out,
                             Enum.EasingStyle.Quart,
                             .2,
@@ -2777,7 +2791,7 @@ function lib:Window(text, preset, closebind)
                     ColorSelection.Visible = false
                     HueSelection.Visible = false
                     Colorpicker:TweenSize(
-                        UDim2.new(0, 363, 0, 42),
+                        UDim2.new(0, elemW, 0, 42),
                         Enum.EasingDirection.Out,
                         Enum.EasingStyle.Quart,
                         .2,
@@ -2790,35 +2804,25 @@ function lib:Window(text, preset, closebind)
             Tab.CanvasSize = UDim2.new(0, 0, 0, TabLayout.AbsoluteContentSize.Y)
         end
         function tabcontent:Label(text)
-            local Label = Instance.new("TextButton")
-            local LabelCorner = Instance.new("UICorner")
+            local Label = Instance.new("Frame")
             local LabelTitle = Instance.new("TextLabel")
 
-            Label.Name = "Button"
+            Label.Name = "Label"
             Label.Parent = Tab
-            Label.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
-            Label.Size = UDim2.new(0, 363, 0, 42)
-            Label.AutoButtonColor = false
-            Label.Font = Enum.Font.SourceSans
-            Label.Text = ""
-            Label.TextColor3 = Color3.fromRGB(0, 0, 0)
-            Label.TextSize = 14.000
+            Label.BackgroundTransparency = 1.000
+            Label.Size = UDim2.new(0, elemW, 0, 22)
 
-            LabelCorner.CornerRadius = UDim.new(0, 5)
-            LabelCorner.Name = "ButtonCorner"
-            LabelCorner.Parent = Label
-
-            LabelTitle.Name = "ButtonTitle"
+            LabelTitle.Name = "LabelTitle"
             LabelTitle.Parent = Label
-            LabelTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             LabelTitle.BackgroundTransparency = 1.000
             LabelTitle.Position = UDim2.new(0.0358126722, 0, 0, 0)
-            LabelTitle.Size = UDim2.new(0, 187, 0, 42)
+            LabelTitle.Size = UDim2.new(1, -13, 1, 0)
             LabelTitle.Font = Enum.Font.Gotham
             LabelTitle.Text = text
-            LabelTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-            LabelTitle.TextSize = 14.000
+            LabelTitle.TextColor3 = Color3.fromRGB(155, 155, 155)
+            LabelTitle.TextSize = 11.000
             LabelTitle.TextXAlignment = Enum.TextXAlignment.Left
+            LabelTitle.TextYAlignment = Enum.TextYAlignment.Center
 
             Tab.CanvasSize = UDim2.new(0, 0, 0, TabLayout.AbsoluteContentSize.Y)
         end
@@ -2831,7 +2835,7 @@ function lib:Window(text, preset, closebind)
 
             local hasAvatar = avatar ~= nil and avatar ~= false
             local leftInset = hasAvatar and 63 or 13
-            local textWidth = 363 - leftInset - 13
+            local textWidth = elemW - leftInset - 13
 
             -- Measured line-by-line (rather than passing the whole multi-line
             -- string to GetTextSize at once) so manual "\n" breaks combined
@@ -2859,7 +2863,7 @@ function lib:Window(text, preset, closebind)
             Paragraph.Name = "Paragraph"
             Paragraph.Parent = Tab
             Paragraph.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
-            Paragraph.Size = UDim2.new(0, 363, 0, cardHeight)
+            Paragraph.Size = UDim2.new(0, elemW, 0, cardHeight)
 
             ParagraphCorner.CornerRadius = UDim.new(0, 5)
             ParagraphCorner.Name = "ParagraphCorner"
@@ -2933,7 +2937,7 @@ function lib:Window(text, preset, closebind)
             Textbox.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
             Textbox.ClipsDescendants = true
             Textbox.Position = UDim2.new(-0.541071415, 0, -0.532915354, 0)
-            Textbox.Size = UDim2.new(0, 363, 0, 42)
+            Textbox.Size = UDim2.new(0, elemW, 0, 42)
 
             TextboxCorner.CornerRadius = UDim.new(0, 5)
             TextboxCorner.Name = "TextboxCorner"
@@ -2995,7 +2999,7 @@ function lib:Window(text, preset, closebind)
             Bind.Name = "Bind"
             Bind.Parent = Tab
             Bind.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
-            Bind.Size = UDim2.new(0, 363, 0, 42)
+            Bind.Size = UDim2.new(0, elemW, 0, 42)
             Bind.AutoButtonColor = false
             Bind.Font = Enum.Font.SourceSans
             Bind.Text = ""
@@ -3023,7 +3027,7 @@ function lib:Window(text, preset, closebind)
             BindText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             BindText.BackgroundTransparency = 1.000
             BindText.Position = UDim2.new(0.0358126722, 0, 0, 0)
-            BindText.Size = UDim2.new(0, 337, 0, 42)
+            BindText.Size = UDim2.new(0, elemW - 26, 0, 42)
             BindText.Font = Enum.Font.Gotham
             BindText.Text = Key
             BindText.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -3066,7 +3070,7 @@ function lib:Window(text, preset, closebind)
                 SectionSpacing.Name = "SectionSpacing"
                 SectionSpacing.Parent = Tab
                 SectionSpacing.BackgroundTransparency = 1.000
-                SectionSpacing.Size = UDim2.new(0, 363, 0, 8)
+                SectionSpacing.Size = UDim2.new(0, elemW, 0, 4)
             end
 
             local Section = Instance.new("TextLabel")
@@ -3074,7 +3078,7 @@ function lib:Window(text, preset, closebind)
             Section.Name = "Section"
             Section.Parent = Tab
             Section.BackgroundTransparency = 1.000
-            Section.Size = UDim2.new(0, 363, 0, 20)
+            Section.Size = UDim2.new(0, elemW, 0, 20)
             Section.Font = Enum.Font.GothamBold
             Section.Text = text
             Section.TextColor3 = PresetColor
