@@ -30,6 +30,12 @@ local function G(v)
     return Color3.fromRGB(x, x, x)
 end
 
+-- knob color for an "on" toggle: dark when the accent is very light (e.g. white), white otherwise
+local function KnobOn()
+    local lum = 0.299 * PresetColor.R + 0.587 * PresetColor.G + 0.114 * PresetColor.B
+    return lum > 0.7 and Color3.fromRGB(30, 30, 30) or Color3.fromRGB(255, 255, 255)
+end
+
 local function reg(inst, prop, v)
     ThemeRegistry[#ThemeRegistry + 1] = {inst, prop, v}
 end
@@ -1962,7 +1968,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             FrameToggleCircle.Name = "FrameToggleCircle"
             FrameToggleCircle.Parent = FrameToggle1
             FrameToggleCircle.BackgroundColor3 = G(50)
-            reg(FrameToggleCircle, "BackgroundColor3", function() return FrameToggle3.BackgroundTransparency < 0.5 and Color3.fromRGB(255, 255, 255) or G(50) end)
+            reg(FrameToggleCircle, "BackgroundColor3", function() return FrameToggle3.BackgroundTransparency < 0.5 and KnobOn() or G(50) end)
             FrameToggleCircle.Position = UDim2.new(0.127000004, 0, 0.222000003, 0)
             FrameToggleCircle.Size = UDim2.new(0, 10, 0, 10)
 
@@ -1973,6 +1979,9 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
                 function()
                     while wait() do
                         FrameToggle3.BackgroundColor3 = PresetColor
+                        if FrameToggle3.BackgroundTransparency == 0 then
+                            FrameToggleCircle.BackgroundColor3 = KnobOn()
+                        end
                     end
                 end
             )()
@@ -2003,7 +2012,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
                         TweenService:Create(
                             FrameToggleCircle,
                             TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                            {BackgroundColor3 = Color3.fromRGB(255, 255, 255)}
+                            {BackgroundColor3 = KnobOn()}
                         ):Play()
                         FrameToggleCircle:TweenPosition(
                             UDim2.new(0.587, 0, 0.222000003, 0),
@@ -2075,7 +2084,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
                 TweenService:Create(
                     FrameToggleCircle,
                     TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                    {BackgroundColor3 = Color3.fromRGB(255, 255, 255)}
+                    {BackgroundColor3 = KnobOn()}
                 ):Play()
                 FrameToggleCircle:TweenPosition(
                     UDim2.new(0.587, 0, 0.222000003, 0),
@@ -2644,7 +2653,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             FrameRainbowToggleCircle.Name = "FrameRainbowToggleCircle"
             FrameRainbowToggleCircle.Parent = FrameRainbowToggle1
             FrameRainbowToggleCircle.BackgroundColor3 = G(50)
-            reg(FrameRainbowToggleCircle, "BackgroundColor3", function() return FrameRainbowToggle3.BackgroundTransparency < 0.5 and Color3.fromRGB(255, 255, 255) or G(50) end)
+            reg(FrameRainbowToggleCircle, "BackgroundColor3", function() return FrameRainbowToggle3.BackgroundTransparency < 0.5 and KnobOn() or G(50) end)
             FrameRainbowToggleCircle.Position = UDim2.new(0.127000004, 0, 0.222000003, 0)
             FrameRainbowToggleCircle.Size = UDim2.new(0, 10, 0, 10)
 
@@ -2669,7 +2678,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             ColorSelection.AnchorPoint = Vector2.new(0.5, 0.5)
             ColorSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             ColorSelection.BackgroundTransparency = 1.000
-            ColorSelection.Position = UDim2.new(preset and select(3, Color3.toHSV(preset)))
+            ColorSelection.Position = UDim2.new(select(2, Color3.toHSV(preset)), 0, 1 - select(3, Color3.toHSV(preset)), 0)
             ColorSelection.Size = UDim2.new(0, 18, 0, 18)
             ColorSelection.Image = "http://www.roblox.com/asset/?id=4805639000"
             ColorSelection.ScaleType = Enum.ScaleType.Fit
@@ -2705,7 +2714,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
             HueSelection.AnchorPoint = Vector2.new(0.5, 0.5)
             HueSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             HueSelection.BackgroundTransparency = 1.000
-            HueSelection.Position = UDim2.new(0.48, 0, 1 - select(1, Color3.toHSV(preset)))
+            HueSelection.Position = UDim2.new(0.48, 0, 1 - select(1, Color3.toHSV(preset)), 0)
             HueSelection.Size = UDim2.new(0, 18, 0, 18)
             HueSelection.Image = "http://www.roblox.com/asset/?id=4805639000"
             HueSelection.Visible = false
@@ -2714,6 +2723,9 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
                 function()
                     while wait() do
                         FrameRainbowToggle3.BackgroundColor3 = PresetColor
+                        if FrameRainbowToggle3.BackgroundTransparency == 0 then
+                            FrameRainbowToggleCircle.BackgroundColor3 = KnobOn()
+                        end
                     end
                 end
             )()
@@ -2756,20 +2768,10 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
                 pcall(callback, BoxColor.BackgroundColor3)
             end
 
-            ColorH =
-                1 -
-                (math.clamp(HueSelection.AbsolutePosition.Y - Hue.AbsolutePosition.Y, 0, Hue.AbsoluteSize.Y) /
-                    Hue.AbsoluteSize.Y)
-            ColorS =
-                (math.clamp(ColorSelection.AbsolutePosition.X - Color.AbsolutePosition.X, 0, Color.AbsoluteSize.X) /
-                Color.AbsoluteSize.X)
-            ColorV =
-                1 -
-                (math.clamp(ColorSelection.AbsolutePosition.Y - Color.AbsolutePosition.Y, 0, Color.AbsoluteSize.Y) /
-                    Color.AbsoluteSize.Y)
+            ColorH, ColorS, ColorV = Color3.toHSV(preset)
 
             BoxColor.BackgroundColor3 = preset
-            Color.BackgroundColor3 = preset
+            Color.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
             pcall(callback, BoxColor.BackgroundColor3)
 
             local function UpdateColorFromPosition(pos)
@@ -2907,7 +2909,7 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
                         TweenService:Create(
                             FrameRainbowToggleCircle,
                             TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                            {BackgroundColor3 = Color3.fromRGB(255, 255, 255)}
+                            {BackgroundColor3 = KnobOn()}
                         ):Play()
                         FrameRainbowToggleCircle:TweenPosition(
                             UDim2.new(0.587, 0, 0.222000003, 0),
@@ -2988,6 +2990,18 @@ function lib:Window(text, preset, closebind, size, transparency, theme)
                 end
             )
             Tab.CanvasSize = UDim2.new(0, 0, 0, TabLayout.AbsoluteContentSize.Y)
+
+            -- picker:Set(color3) updates the box, the selectors and fires the callback
+            local picker = {}
+            function picker:Set(c)
+                ColorH, ColorS, ColorV = Color3.toHSV(c)
+                ColorSelection.Position = UDim2.new(ColorS, 0, 1 - ColorV, 0)
+                HueSelection.Position = UDim2.new(0.48, 0, 1 - ColorH, 0)
+                BoxColor.BackgroundColor3 = c
+                Color.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
+                pcall(callback, c)
+            end
+            return picker
         end
         function tabcontent:Label(text)
             local Label = Instance.new("Frame")
