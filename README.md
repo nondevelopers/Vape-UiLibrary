@@ -16,6 +16,23 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/nondevelopers/Vape-Ui
 
 ## updates
 
+> 10/02/2026  
+[+] added Light, Dark and Black themes, with a smooth fade when switching.  
+[+] added `lib:SetTheme(name)` and `lib:GetTheme()`.  
+[+] added theme dropdown to the Settings tab.  
+[+] added `theme` option to `lib:Window`.  
+[+] added smooth animations: window fade in/out, tab content slide.  
+[+] added Updates tab to the example script.  
+[+] colorpicker now defaults to white.  
+[+] redesigned dropdown options as rounded buttons with a grey outline, hover effect, and an accent outline and check on the picked option.  
+[+] added window transparency option, elements follow at window + 0.25.  
+[+] added window size option (Vector2).  
+[+] redesigned Label to look like plain text instead of a button.  
+[+] moved Section headers higher.  
+[+] simplified the example script comments.  
+[+] fixed colorpicker box and textbox field position on custom window sizes.  
+[+] close and minimize buttons now fade in on hover when the window is transparent.
+
 > 07/18/2026  
 [+] added support lucide icons for button, toggle.  
 
